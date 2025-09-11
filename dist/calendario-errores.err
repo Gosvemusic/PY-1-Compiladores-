@@ -1,0 +1,6 @@
+0001 program calendario; 
+0002 uses crt, dos; 
+0003 var x : integer; 
+0004 begin 
+0005 WriteLn('Hola mundo'); 
+0006 end. 
