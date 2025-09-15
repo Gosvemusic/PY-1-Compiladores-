@@ -15,33 +15,33 @@ public class ValidadorIdentificadores {
     private static final Pattern PATRON_NUMERO_DECIMAL = Pattern.compile("^\\d+\\.\\d+$");
     
     /**
-     * Valida si un identificador es válido según las reglas de PASCAL
+     * Valida si un identificador es valido según las reglas de PASCAL
      * @param identificador Identificador a validar
      * @return ResultadoValidacion con el resultado y mensaje de error
      */
     public static ResultadoValidacion validarIdentificador(String identificador) {
         if (identificador == null || identificador.trim().isEmpty()) {
-            return new ResultadoValidacion(false, "Identificador no puede estar vacío");
+            return new ResultadoValidacion(false, "Identificador no puede estar vacio");
         }
         
         String id = identificador.trim();
         
-        // Verificar longitud mínima
+        // Verifica longitud minima
         if (id.length() < 1) {
-            return new ResultadoValidacion(false, "Identificador debe tener al menos un carácter");
+            return new ResultadoValidacion(false, "Identificador debe tener al menos un caracter");
         }
         
-        // Verificar que no empiece con número
+        // Verifica que no empiece con numero
         if (Character.isDigit(id.charAt(0))) {
             return new ResultadoValidacion(false, 
-                "Identificador no puede comenzar con número: " + id);
+                "Identificador no puede comenzar con numero: " + id);
         }
         
-        // Verificar patrón general
+        // Verifica patron general
         if (!PATRON_IDENTIFICADOR.matcher(id).matches()) {
             return new ResultadoValidacion(false, 
-                "Identificador contiene caracteres inválidos: " + id + 
-                ". Solo se permiten letras, números y guiones bajos");
+                "Identificador contiene caracteres invalidos: " + id + 
+                ". Solo se permiten letras, numeros y guiones bajos");
         }
         
         // Verificar que no sea palabra reservada
@@ -50,13 +50,13 @@ public class ValidadorIdentificadores {
                 "No se puede usar palabra reservada como identificador: " + id);
         }
         
-        return new ResultadoValidacion(true, "Identificador válido");
+        return new ResultadoValidacion(true, "Identificador valido");
     }
     
     /**
-     * Valida si una cadena es un número válido
-     * @param numero Cadena a validar como número
-     * @return true si es un número válido
+     * Valida si una cadena es un numero valido
+     * @param numero Cadena a validar como numero
+     * @return true si es un numero valido
      */
     public static boolean esNumeroValido(String numero) {
         if (numero == null || numero.trim().isEmpty()) {
@@ -69,7 +69,7 @@ public class ValidadorIdentificadores {
     }
     
     /**
-     * Valida si una cadena es un identificador básico (solo letras)
+     * Valida si una cadena es un identificador basico (solo letras)
      * @param identificador Identificador a validar
      * @return true si contiene solo letras
      */
@@ -82,36 +82,36 @@ public class ValidadorIdentificadores {
     }
     
     /**
-     * Valida el formato de una declaración de variable
-     * @param declaracion Declaración completa de variable
+     * Valida el formato de una declaracion de variable
+     * @param declaracion Declaracion completa de variable
      * @return ResultadoValidacion con el resultado
      */
     public static ResultadoValidacion validarDeclaracionVariable(String declaracion) {
         if (declaracion == null || declaracion.trim().isEmpty()) {
-            return new ResultadoValidacion(false, "Declaración no puede estar vacía");
+            return new ResultadoValidacion(false, "Declaracion no puede estar vacia");
         }
         
         String decl = declaracion.trim();
         
-        // Verificar que empiece con 'var'
+        // Verifica que empiece con 'var'
         if (!decl.toLowerCase().startsWith("var ")) {
             return new ResultadoValidacion(false, 
-                "Declaración de variable debe comenzar con 'var'");
+                "Declaracion de variable debe comenzar con 'var'");
         }
         
-        // Verificar que termine con punto y coma
+        // Verifica que termine con punto y coma
         if (!decl.endsWith(";")) {
             return new ResultadoValidacion(false, 
-                "Declaración de variable debe terminar con punto y coma");
+                "Declaracion de variable debe terminar con punto y coma");
         }
         
-        // Verificar que contenga dos puntos
+        // Verifica que contenga dos puntos
         if (!decl.contains(":")) {
             return new ResultadoValidacion(false, 
-                "Declaración de variable debe contener ':' para separar nombre y tipo");
+                "Declaracion de variable debe contener ':' para separar nombre y tipo");
         }
         
-        // Extraer partes
+        // Extrae partes
         String sinVar = decl.substring(4); // Quitar "var "
         String sinPuntoComa = sinVar.substring(0, sinVar.length() - 1); // Quitar ";"
         
@@ -124,64 +124,64 @@ public class ValidadorIdentificadores {
         String nombreVariable = partes[0].trim();
         String tipoVariable = partes[1].trim();
         
-        // Validar identificador
+        // Valida identificador
         ResultadoValidacion resultadoId = validarIdentificador(nombreVariable);
         if (!resultadoId.esValido) {
             return resultadoId;
         }
         
-        // Validar tipo
+        // Valida tipo
         if (!PalabrasReservadas.esTipoValido(tipoVariable)) {
             return new ResultadoValidacion(false, 
-                "Tipo de variable inválido: " + tipoVariable + 
-                ". Tipos válidos: integer, string, Word");
+                "Tipo de variable invalido: " + tipoVariable + 
+                ". Tipos validos: integer, string, Word");
         }
         
-        // Verificar espacio después de ':'
+        // Verifica espacio despues de ':'
         if (!partes[1].startsWith(" ")) {
             return new ResultadoValidacion(false, 
-                "Debe haber un espacio después de ':' en la declaración");
+                "Debe haber un espacio despues de ':' en la declaracion");
         }
         
-        return new ResultadoValidacion(true, "Declaración de variable válida");
+        return new ResultadoValidacion(true, "Declaracion de variable valida");
     }
     
     /**
-     * Valida el formato de una declaración de constante
-     * @param declaracion Declaración completa de constante
+     * Valida el formato de una declaracion de constante
+     * @param declaracion Declaracion completa de constante
      * @return ResultadoValidacion con el resultado
      */
     public static ResultadoValidacion validarDeclaracionConstante(String declaracion) {
         if (declaracion == null || declaracion.trim().isEmpty()) {
-            return new ResultadoValidacion(false, "Declaración no puede estar vacía");
+            return new ResultadoValidacion(false, "Declaracion no puede estar vacia");
         }
         
         String decl = declaracion.trim();
         
-        // Verificar que empiece con 'const'
+        // Verifica que empiece con 'const'
         if (!decl.toLowerCase().startsWith("const ")) {
             return new ResultadoValidacion(false, 
                 "Declaración de constante debe comenzar con 'const'");
         }
         
-        // Verificar que termine con punto y coma
+        // Verifica que termine con punto y coma
         if (!decl.endsWith(";")) {
             return new ResultadoValidacion(false, 
                 "Declaración de constante debe terminar con punto y coma");
         }
         
-        // Para arrays, validación simplificada
+        // Para arrays, validacion simplificada
         if (decl.contains("array")) {
-            return new ResultadoValidacion(true, "Declaración de array válida");
+            return new ResultadoValidacion(true, "Declaracion de array valida");
         }
         
-        // Verificar que contenga signo igual
+        // Verifica que contenga signo igual
         if (!decl.contains("=")) {
             return new ResultadoValidacion(false, 
                 "Declaración de constante debe contener '=' para asignar valor");
         }
         
-        // Extraer partes
+        // Extrae partes
         String[] partesIgual = decl.split("=");
         if (partesIgual.length != 2) {
             return new ResultadoValidacion(false, 
@@ -191,22 +191,22 @@ public class ValidadorIdentificadores {
         String parteIzq = partesIgual[0].trim();
         String parteDer = partesIgual[1].trim();
         
-        // Verificar parte izquierda: const identificador
+        // Verifica parte izquierda: const identificador
         String[] partesIzq = parteIzq.split("\\s+");
         if (partesIzq.length != 2 || !partesIzq[0].equalsIgnoreCase("const")) {
             return new ResultadoValidacion(false, 
-                "Formato incorrecto en la parte izquierda de la declaración");
+                "Formato incorrecto en la parte izquierda de la declaracion");
         }
         
         String nombreConstante = partesIzq[1];
         
-        // Validar identificador
+        // Valida identificador
         ResultadoValidacion resultadoId = validarIdentificador(nombreConstante);
         if (!resultadoId.esValido) {
             return resultadoId;
         }
         
-        // Verificar parte derecha (valor)
+        // Verifica parte derecha (valor)
         if (!parteDer.endsWith(";")) {
             return new ResultadoValidacion(false, 
                 "Valor de constante debe terminar con punto y coma");
@@ -218,7 +218,7 @@ public class ValidadorIdentificadores {
     /**
      * Extrae el identificador de una declaración de variable
      * @param declaracion Declaración de variable
-     * @return Nombre del identificador o null si no es válido
+     * @return Nombre del identificador o null si no es valido
      */
     public static String extraerIdentificadorVariable(String declaracion) {
         ResultadoValidacion resultado = validarDeclaracionVariable(declaracion);
@@ -237,9 +237,9 @@ public class ValidadorIdentificadores {
     }
     
     /**
-     * Extrae el identificador de una declaración de constante
+     * Extrae el identificador de una declaracion de constante
      * @param declaracion Declaración de constante
-     * @return Nombre del identificador o null si no es válido
+     * @return Nombre del identificador o null si no es valido
      */
     public static String extraerIdentificadorConstante(String declaracion) {
         ResultadoValidacion resultado = validarDeclaracionConstante(declaracion);
@@ -249,7 +249,7 @@ public class ValidadorIdentificadores {
         
         try {
             if (declaracion.contains("array")) {
-                // Para arrays, extraer de forma simple
+                // Para arrays, extrae de forma simple
                 String[] partes = declaracion.split("\\s+");
                 if (partes.length >= 2) {
                     return partes[1];
@@ -270,7 +270,7 @@ public class ValidadorIdentificadores {
     }
     
     /**
-     * Clase para encapsular el resultado de una validación
+     * Clase para encapsular el resultado de una validacion
      */
     public static class ResultadoValidacion {
         public final boolean esValido;

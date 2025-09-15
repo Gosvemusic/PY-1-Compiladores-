@@ -33,9 +33,9 @@ public class LectorArchivos {
     }
     
     /**
-     * Lee un archivo línea por línea para análisis detallado
+     * Lee un archivo linea por linea para analisis detallado
      * @param nombreArchivo Nombre del archivo a leer
-     * @return Lista de líneas del archivo
+     * @return Lista de lineas del archivo
      * @throws IOException Si hay error al leer el archivo
      */
     public List<String> leerLineas(String nombreArchivo) throws IOException {
@@ -54,9 +54,9 @@ public class LectorArchivos {
     }
     
     /**
-     * Extrae el nombre base del archivo sin extensión
+     * Extrae el nombre base del archivo sin extension
      * @param nombreArchivo Nombre completo del archivo
-     * @return Nombre sin extensión
+     * @return Nombre sin extension
      */
     public String extraerNombreBase(String nombreArchivo) {
         int ultimoPunto = nombreArchivo.lastIndexOf('.');

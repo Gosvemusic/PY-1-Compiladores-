@@ -112,7 +112,7 @@ public class AnalizadorLexico {
                 if (antesComentario.endsWith(";")) {
                     manejadorErrores.agregarError(numeroLinea,
                         CodigosError.COMENTARIO_UBICACION_INCORRECTA,
-                        "No se permiten comentarios después de punto y coma");
+                        "No se permiten comentarios despues de punto y coma");
                 }
                 
                 resultado = resultado.substring(0, inicioLlave) + 

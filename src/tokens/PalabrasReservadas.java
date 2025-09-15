@@ -11,7 +11,7 @@ public class PalabrasReservadas {
     private static final Set<String> PALABRAS_RESERVADAS = new HashSet<>();
     
     static {
-        // Inicializar palabras reservadas según el proyecto
+        // Inicia palabras reservadas 
         String[] palabras = {
             "ABSOLUTE", "DOWNTO", "BEGIN", "DESTRUCTOR", "MOD",
             "AND", "ELSE", "CASE", "EXTERNAL", "NOT",
@@ -50,9 +50,9 @@ public class PalabrasReservadas {
     }
     
     /**
-     * Verifica si una cadena es un tipo de dato válido
+     * Verifica si una cadena es un tipo de dato valido
      * @param tipo Tipo a verificar
-     * @return true si es un tipo válido
+     * @return true si es un tipo valido
      */
     public static boolean esTipoValido(String tipo) {
         if (tipo == null) {

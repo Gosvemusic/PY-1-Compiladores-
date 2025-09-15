@@ -26,8 +26,8 @@ public class Utilidades {
     ));
     
     /**
-     * Formatea un número de línea con ceros a la izquierda
-     * @param numeroLinea Número de línea
+     * Formatea un numero de linea con ceros a la izquierda
+     * @param numeroLinea Numero de linea
      * @return String formateado (ej: 0001, 0042, 1234)
      */
     public static String formatearNumeroLinea(int numeroLinea) {
@@ -35,26 +35,26 @@ public class Utilidades {
     }
     
     /**
-     * Limpia una línea eliminando espacios extras y tabulaciones
-     * @param linea Línea a limpiar
-     * @return Línea limpia
+     * Limpia una linea eliminando espacios extras y tabulaciones
+     * @param linea Linea a limpiar
+     * @return Linea limpia
      */
     public static String limpiarLinea(String linea) {
         if (linea == null) {
             return "";
         }
         
-        // Reemplazar tabs por espacios
+        // Reemplaza tabs por espacios
         String lineaLimpia = linea.replace('\t', ' ');
         
-        // Mantener espacios significativos pero limpiar extremos
+        // Mantiene espacios significativos pero limpiar extremos
         return lineaLimpia;
     }
     
     /**
-     * Normaliza espacios en una línea (reemplaza múltiples espacios por uno)
-     * @param linea Línea a normalizar
-     * @return Línea con espacios normalizados
+     * Normaliza espacios en una linea (reemplaza muchos espacios por uno)
+     * @param linea Linea a normalizar
+     * @return Linea con espacios normalizados
      */
     public static String normalizarEspacios(String linea) {
         if (linea == null) {
@@ -65,17 +65,17 @@ public class Utilidades {
     }
     
     /**
-     * Verifica si una línea está vacía o contiene solo espacios
-     * @param linea Línea a verificar
-     * @return true si está vacía
+     * Verifica si una linea esta vacia o contiene solo espacios
+     * @param linea Linea a verificar
+     * @return true si esta vacia
      */
     public static boolean esLineaVacia(String linea) {
         return linea == null || linea.trim().isEmpty();
     }
     
     /**
-     * Verifica si una línea es un comentario
-     * @param linea Línea a verificar
+     * Verifica si una linea es un comentario
+     * @param linea Linea a verificar
      * @return true si es comentario
      */
     public static boolean esComentario(String linea) {
@@ -89,9 +89,9 @@ public class Utilidades {
     }
     
     /**
-     * Elimina comentarios de una línea
-     * @param linea Línea original
-     * @return Línea sin comentarios
+     * Elimina comentarios de una linea
+     * @param linea Linea original
+     * @return Linea sin comentarios
      */
     public static String eliminarComentarios(String linea) {
         if (linea == null) {
@@ -100,13 +100,13 @@ public class Utilidades {
         
         String resultado = linea;
         
-        // Eliminar comentarios de línea (//)
+        // Elimina comentarios de linea (//)
         int posSlash = resultado.indexOf("//");
         if (posSlash != -1) {
             resultado = resultado.substring(0, posSlash);
         }
         
-        // Eliminar comentarios de bloque ({})
+        // Elimina comentarios de bloque ({})
         int posInicioLlave = resultado.indexOf("{");
         int posFinLlave = resultado.indexOf("}");
         
@@ -122,8 +122,8 @@ public class Utilidades {
     }
     
     /**
-     * Verifica si un carácter es un delimitador
-     * @param c Carácter a verificar
+     * Verifica si un caracter es un delimitador
+     * @param c Caracter a verificar
      * @return true si es delimitador
      */
     public static boolean esDelimitador(char c) {
@@ -140,8 +140,8 @@ public class Utilidades {
     }
     
     /**
-     * Divide una línea en tokens considerando cadenas y comentarios
-     * @param linea Línea a tokenizar
+     * Divide una linea en tokens considerando cadenas y comentarios
+     * @param linea Linea a tokenizar
      * @return Lista de tokens como strings
      */
     public static List<String> tokenizarLinea(String linea) {
@@ -164,13 +164,13 @@ public class Utilidades {
                 dentroDeComillas = !dentroDeComillas;
                 tokenActual.append(c);
             }
-            // Si estamos dentro de comillas, agregar todo
+            // Si esta dentro de comillas, agrega todo
             else if (dentroDeComillas) {
                 tokenActual.append(c);
             }
-            // Manejar comentarios
+            // Maneja comentarios
             else if (c == '/' && i + 1 < linea.length() && linea.charAt(i + 1) == '/') {
-                // Agregar token actual si existe
+                // Agrega token actual si existe
                 if (tokenActual.length() > 0) {
                     tokens.add(tokenActual.toString());
                     tokenActual.setLength(0);
@@ -180,7 +180,7 @@ public class Utilidades {
             }
             else if (c == '{') {
                 dentroDeComentario = true;
-                // Agregar token actual si existe
+                // Agrega token actual si existe
                 if (tokenActual.length() > 0) {
                     tokens.add(tokenActual.toString());
                     tokenActual.setLength(0);
@@ -190,29 +190,29 @@ public class Utilidades {
                 dentroDeComentario = false;
             }
             else if (dentroDeComentario) {
-                // Ignorar contenido de comentarios
+                // Ignora contenido de comentarios
                 continue;
             }
-            // Manejar espacios
+            // Maneja espacios
             else if (Character.isWhitespace(c)) {
                 if (tokenActual.length() > 0) {
                     tokens.add(tokenActual.toString());
                     tokenActual.setLength(0);
                 }
             }
-            // Manejar delimitadores
+            // Maneja delimitadores
             else if (esDelimitador(c)) {
                 if (tokenActual.length() > 0) {
                     tokens.add(tokenActual.toString());
                     tokenActual.setLength(0);
                 }
                 
-                // Verificar operadores compuestos
+                // Verifica operadores compuestos
                 if (i + 1 < linea.length()) {
                     String posibleOperador = "" + c + linea.charAt(i + 1);
                     if (esOperadorCompuesto(posibleOperador)) {
                         tokens.add(posibleOperador);
-                        i++; // Saltar el siguiente carácter
+                        i++; // Salta el siguiente caracter
                         caracterAnterior = linea.charAt(i);
                         continue;
                     }
@@ -220,7 +220,7 @@ public class Utilidades {
                 
                 tokens.add(String.valueOf(c));
             }
-            // Carácter normal
+            // Caracter normal
             else {
                 tokenActual.append(c);
             }
@@ -228,7 +228,7 @@ public class Utilidades {
             caracterAnterior = c;
         }
         
-        // Agregar último token si existe
+        // Agrega ultimo token si existe
         if (tokenActual.length() > 0) {
             tokens.add(tokenActual.toString());
         }
@@ -246,33 +246,33 @@ public class Utilidades {
             return TipoToken.DESCONOCIDO;
         }
         
-        // Verificar si es palabra reservada
+        // Verifica si es palabra reservada
         if (tokens.PalabrasReservadas.esPalabraReservada(valor)) {
             return TipoToken.PALABRA_RESERVADA;
         }
         
-        // Verificar si es número
+        // Verifica si es número
         if (PATRON_NUMERO_ENTERO.matcher(valor).matches() || 
             PATRON_NUMERO_REAL.matcher(valor).matches()) {
             return TipoToken.NUMERO;
         }
         
-        // Verificar si es cadena
+        // Verifica si es cadena
         if (PATRON_CADENA_PASCAL.matcher(valor).matches()) {
             return TipoToken.CADENA;
         }
         
-        // Verificar si es identificador
+        // Verifica si es identificador
         if (ValidadorIdentificadores.validarIdentificador(valor).esValido) {
             return TipoToken.IDENTIFICADOR;
         }
         
-        // Verificar si es operador compuesto
+        // Verifica si es operador compuesto
         if (esOperadorCompuesto(valor)) {
             return TipoToken.OPERADOR;
         }
         
-        // Verificar si es delimitador simple
+        // Verifica si es delimitador simple
         if (valor.length() == 1 && esDelimitador(valor.charAt(0))) {
             return TipoToken.DELIMITADOR;
         }
@@ -288,7 +288,7 @@ public class Utilidades {
     /**
      * Convierte una lista de strings en tokens
      * @param palabras Lista de palabras
-     * @param numeroLinea Número de línea
+     * @param numeroLinea Numero de linea
      * @return Lista de tokens
      */
     public static List<Token> convertirATokens(List<String> palabras, int numeroLinea) {
@@ -322,7 +322,7 @@ public class Utilidades {
     }
     
     /**
-     * Busca un token específico en una lista
+     * Busca un token especifico en una lista
      * @param tokens Lista de tokens
      * @param valor Valor a buscar
      * @param tipo Tipo de token a buscar
@@ -338,11 +338,11 @@ public class Utilidades {
     }
     
     /**
-     * Cuenta ocurrencias de un token específico
+     * Cuenta ocurrencias de un token especifico
      * @param tokens Lista de tokens
      * @param valor Valor a contar
      * @param tipo Tipo de token
-     * @return Número de ocurrencias
+     * @return Numero de ocurrencias
      */
     public static int contarTokens(List<Token> tokens, String valor, TipoToken tipo) {
         int contador = 0;
@@ -355,9 +355,9 @@ public class Utilidades {
     }
     
     /**
-     * Valida si una cadena es un nombre de archivo válido
+     * Valida si una cadena es un nombre de archivo valido
      * @param nombreArchivo Nombre del archivo
-     * @return true si es válido
+     * @return true si es valido
      */
     public static boolean esNombreArchivoValido(String nombreArchivo) {
         if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
@@ -366,12 +366,12 @@ public class Utilidades {
         
         String nombre = nombreArchivo.trim();
         
-        // Verificar extensión .pas
+        // Verifica extension .pas
         if (!nombre.toLowerCase().endsWith(".pas")) {
             return false;
         }
         
-        // Verificar que no contenga caracteres inválidos
+        // Verifica que no contenga caracteres invalidos
         String caracteresInvalidos = "<>:\"|?*";
         for (char c : caracteresInvalidos.toCharArray()) {
             if (nombre.contains(String.valueOf(c))) {
@@ -383,9 +383,9 @@ public class Utilidades {
     }
     
     /**
-     * Extrae el nombre base de un archivo (sin extensión)
+     * Extrae el nombre base de un archivo (sin extension)
      * @param nombreArchivo Nombre completo del archivo
-     * @return Nombre base sin extensión
+     * @return Nombre base sin extension
      */
     public static String extraerNombreBase(String nombreArchivo) {
         if (nombreArchivo == null || nombreArchivo.isEmpty()) {
@@ -394,13 +394,13 @@ public class Utilidades {
         
         String nombre = nombreArchivo;
         
-        // Eliminar ruta si existe
+        // Elimina ruta si existe
         int ultimaBarra = Math.max(nombre.lastIndexOf('/'), nombre.lastIndexOf('\\'));
         if (ultimaBarra != -1) {
             nombre = nombre.substring(ultimaBarra + 1);
         }
         
-        // Eliminar extensión
+        // Elimina extension
         int ultimoPunto = nombre.lastIndexOf('.');
         if (ultimoPunto != -1) {
             nombre = nombre.substring(0, ultimoPunto);
@@ -443,8 +443,8 @@ public class Utilidades {
     
     /**
      * Convierte un texto a formato de error
-     * @param codigo Código del error
-     * @param descripcion Descripción del error
+     * @param codigo Codigo del error
+     * @param descripcion Descripcion del error
      * @return String formateado para error
      */
     public static String formatearError(int codigo, String descripcion) {
@@ -453,9 +453,9 @@ public class Utilidades {
     
     /**
      * Convierte un texto a formato de error con línea
-     * @param codigo Código del error
-     * @param numeroLinea Número de línea
-     * @param descripcion Descripción del error
+     * @param codigo Codigo del error
+     * @param numeroLinea Numero de linea
+     * @param descripcion Descripcion del error
      * @return String formateado para error
      */
     public static String formatearErrorConLinea(int codigo, int numeroLinea, String descripcion) {
@@ -463,9 +463,9 @@ public class Utilidades {
     }
     
     /**
-     * Valida el formato de una instrucción Write/WriteLn
-     * @param instruccion Instrucción completa
-     * @return true si el formato es válido
+     * Valida el formato de una instruccion Write/WriteLn
+     * @param instruccion Instruccion completa
+     * @return true si el formato es valido
      */
     public static boolean esFormatoWriteValido(String instruccion) {
         if (instruccion == null || instruccion.trim().isEmpty()) {
@@ -484,7 +484,7 @@ public class Utilidades {
             return false;
         }
         
-        // Verificar paréntesis balanceados
+        // Verificar parentesis balanceados
         int contadorParentesis = 0;
         for (char c : instruccion.toCharArray()) {
             if (c == '(') contadorParentesis++;
@@ -495,9 +495,9 @@ public class Utilidades {
     }
     
     /**
-     * Extrae el contenido entre paréntesis de una instrucción Write/WriteLn
+     * Extrae el contenido entre parentesis de una instruccion Write/WriteLn
      * @param instruccion Instrucción completa
-     * @return Contenido entre paréntesis o null si no es válido
+     * @return Contenido entre parentesis o null si no es valido
      */
     public static String extraerContenidoWrite(String instruccion) {
         if (!esFormatoWriteValido(instruccion)) {
@@ -515,7 +515,7 @@ public class Utilidades {
     }
     
     /**
-     * Genera estadísticas básicas de un archivo
+     * Genera estadisticas basicas de un archivo
      * @param contenido Contenido del archivo
      * @return Map con estadísticas
      */

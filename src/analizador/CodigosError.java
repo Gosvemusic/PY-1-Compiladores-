@@ -1,7 +1,7 @@
 package analizador;
 
 /**
- * Clase que define los códigos de error estándar del analizador
+ * Clase que define los codigos de error estandar del analizador
  */
 public class CodigosError {
     

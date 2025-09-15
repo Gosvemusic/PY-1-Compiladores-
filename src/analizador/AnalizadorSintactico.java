@@ -8,7 +8,7 @@ import utils.ValidadorIdentificadores;
 import java.util.*;
 
 /**
- * Analizador sintáctico para código PASCAL
+ * Analizador sintactico para código PASCAL
  * Valida la estructura y sintaxis del programa
  */
 public class AnalizadorSintactico {
@@ -27,17 +27,17 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Realiza el análisis sintáctico completo
+     * Realiza el analisis sintactico completo
      * @param contenido Contenido del archivo
-     * @param tokens Lista de tokens del análisis léxico
+     * @param tokens Lista de tokens del analisis lexico
      */
     public void analizar(String contenido, List<Token> tokens) {
-        // Extraer nombre del archivo para validación
+        // Extraer nombre del archivo para validacion
         extraerNombreArchivo();
         
         String[] lineas = contenido.split("\n");
         
-        // Análisis línea por línea
+        // Analisis linea por linea
         for (int i = 0; i < lineas.length; i++) {
             int numeroLinea = i + 1;
             String linea = lineas[i].trim();
@@ -67,8 +67,8 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Verifica si una línea es un comentario
-     * @param linea Línea a verificar
+     * Verifica si una linea es un comentario
+     * @param linea Linea a verificar
      * @return true si es comentario
      */
     private boolean esComentario(String linea) {
@@ -77,11 +77,11 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Analiza la estructura de una línea
-     * @param linea Línea a analizar
-     * @param numeroLinea Número de línea
-     * @param esPrimeraLinea Si es la primera línea del archivo
-     * @param esUltimaLinea Si es la última línea del archivo
+     * Analiza la estructura de una linea
+     * @param linea Linea a analizar
+     * @param numeroLinea Numero de linea
+     * @param esPrimeraLinea Si es la primera linea del archivo
+     * @param esUltimaLinea Si es la ultima linea del archivo
      */
     private void analizarEstructura(String linea, int numeroLinea, boolean esPrimeraLinea, boolean esUltimaLinea) {
         String lineaLimpia = eliminarComentarios(linea);
@@ -90,7 +90,7 @@ public class AnalizadorSintactico {
             return;
         }
         
-        // Análisis según palabra clave
+        // Analisis segun palabra clave
         if (lineaLimpia.toLowerCase().startsWith("program ")) {
             analizarProgram(lineaLimpia, numeroLinea, esPrimeraLinea);
         } else if (lineaLimpia.toLowerCase().startsWith("uses ")) {
@@ -110,16 +110,16 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Analiza la declaración program
-     * @param linea Línea con program
-     * @param numeroLinea Número de línea
-     * @param esPrimeraLinea Si es la primera línea
+     * Analiza la declaracion program
+     * @param linea Linea con program
+     * @param numeroLinea Numero de linea
+     * @param esPrimeraLinea Si es la primera linea
      */
     private void analizarProgram(String linea, int numeroLinea, boolean esPrimeraLinea) {
         if (!esPrimeraLinea) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.PROGRAM_NO_ENCONTRADO,
-                "Program debe ser la primera declaración del archivo");
+                "Program debe ser la primera declaracion del archivo");
             return;
         }
         
@@ -149,7 +149,7 @@ public class AnalizadorSintactico {
         
         String identificador = identificadorConPuntoComa.substring(0, identificadorConPuntoComa.length() - 1);
         
-        // Verificar que el identificador coincida con el nombre del archivo
+        // Verifica que el identificador coincida con el nombre del archivo
         if (!identificador.equalsIgnoreCase(nombreArchivo)) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.PROGRAM_NOMBRE_INCORRECTO,
@@ -160,15 +160,15 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Analiza la declaración uses
-     * @param linea Línea con uses
-     * @param numeroLinea Número de línea
+     * Analiza la declaracion uses
+     * @param linea Linea con uses
+     * @param numeroLinea Numero de linea
      */
     private void analizarUses(String linea, int numeroLinea) {
         if (!programEncontrado) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.USES_NO_ENCONTRADO,
-                "Uses debe venir después de program");
+                "Uses debe venir despues de program");
             return;
         }
         
@@ -190,14 +190,14 @@ public class AnalizadorSintactico {
     
     /**
      * Analiza declaraciones de constantes
-     * @param linea Línea con const
-     * @param numeroLinea Número de línea
+     * @param linea Linea con const
+     * @param numeroLinea Numero de linea
      */
     private void analizarConst(String linea, int numeroLinea) {
         if (!usesEncontrado) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.CONSTANTE_UBICACION_INCORRECTA,
-                "Const debe venir después de uses");
+                "Const debe venir despues de uses");
             return;
         }
         
@@ -211,11 +211,11 @@ public class AnalizadorSintactico {
         if (beginEncontrado) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.CONSTANTE_UBICACION_INCORRECTA,
-                "Const no puede venir después de begin");
+                "Const no puede venir despues de begin");
             return;
         }
         
-        // Validar formato de constante
+        // Valida formato de constante
         validarFormatoConstante(linea, numeroLinea);
         constEncontrado = true;
     }
@@ -223,15 +223,15 @@ public class AnalizadorSintactico {
     /**
      * Valida el formato de una declaración de constante
      * @param linea Línea con const
-     * @param numeroLinea Número de línea
+     * @param numeroLinea Numero de linea
      */
     private void validarFormatoConstante(String linea, int numeroLinea) {
-        // Para arrays especiales, solo validar estructura básica
+        // Para arrays especiales, solo valida estructura basica
         if (linea.contains("array")) {
             if (!linea.endsWith(";")) {
                 manejadorErrores.agregarError(numeroLinea,
                     CodigosError.CONSTANTE_SIN_PUNTO_COMA,
-                    "Declaración de constante debe terminar con punto y coma");
+                    "Declaracion de constante debe terminar con punto y coma");
             }
             return;
         }
@@ -271,7 +271,7 @@ public class AnalizadorSintactico {
     /**
      * Valida un identificador de constante
      * @param identificador Identificador a validar
-     * @param numeroLinea Número de línea
+     * @param numeroLinea Numero de linea
      */
     private void validarIdentificadorConstante(String identificador, int numeroLinea) {
         if (identificador.isEmpty()) {
@@ -284,7 +284,7 @@ public class AnalizadorSintactico {
         if (Character.isDigit(identificador.charAt(0))) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.IDENTIFICADOR_NUMERO_INICIAL,
-                "Identificador de constante no puede comenzar con número: " + identificador);
+                "Identificador de constante no puede comenzar con numero: " + identificador);
         }
         
         if (PalabrasReservadas.esPalabraReservada(identificador)) {
@@ -296,8 +296,8 @@ public class AnalizadorSintactico {
     
     /**
      * Analiza declaraciones de variables
-     * @param linea Línea con var
-     * @param numeroLinea Número de línea
+     * @param linea Linea con var
+     * @param numeroLinea Número de linea
      */
     private void analizarVar(String linea, int numeroLinea) {
         if (!usesEncontrado) {
@@ -314,23 +314,23 @@ public class AnalizadorSintactico {
             return;
         }
         
-        // Validar formato de variable
+        // Valida formato de variable
         validarFormatoVariable(linea, numeroLinea);
         varEncontrado = true;
     }
     
     /**
-     * Valida el formato de una declaración de variable
-     * @param linea Línea con var
-     * @param numeroLinea Número de línea
+     * Valida el formato de una declaracion de variable
+     * @param linea Linea con var
+     * @param numeroLinea Numero de linea
      */
     private void validarFormatoVariable(String linea, int numeroLinea) {
-        // Para arrays, solo validar estructura básica
+        // Para arrays, solo valida estructura basica
         if (linea.contains("array")) {
             if (!linea.endsWith(";")) {
                 manejadorErrores.agregarError(numeroLinea,
                     CodigosError.VARIABLE_SIN_PUNTO_COMA,
-                    "Declaración de variable debe terminar con punto y coma");
+                    "Declaracion de variable debe terminar con punto y coma");
             }
             return;
         }
@@ -354,7 +354,7 @@ public class AnalizadorSintactico {
         String parteIzq = partes[0].trim();
         String parteDer = partes[1].trim();
         
-        // Validar parte izquierda: var identificador
+        // Valida parte izquierda: var identificador
         String[] partesIzq = parteIzq.split("\\s+");
         if (partesIzq.length != 2 || !partesIzq[0].equalsIgnoreCase("var")) {
             manejadorErrores.agregarError(numeroLinea,
@@ -378,21 +378,21 @@ public class AnalizadorSintactico {
         if (!partes[1].startsWith(" ")) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.VARIABLE_FORMATO_INCORRECTO,
-                "Debe haber un espacio después de ':' en declaración de variable");
+                "Debe haber un espacio despues de ':' en declaracion de variable");
         }
         
         String tipo = parteDer.substring(0, parteDer.length() - 1).trim();
         if (!PalabrasReservadas.esTipoValido(tipo)) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.VARIABLE_TIPO_INVALIDO,
-                "Tipo de variable inválido: " + tipo + ". Tipos válidos: integer, string, Word");
+                "Tipo de variable invalido: " + tipo + ". Tipos validos: integer, string, Word");
         }
     }
     
     /**
      * Valida un identificador de variable
      * @param identificador Identificador a validar
-     * @param numeroLinea Número de línea
+     * @param numeroLinea Numero de linea
      */
     private void validarIdentificadorVariable(String identificador, int numeroLinea) {
         if (identificador.isEmpty()) {
@@ -405,7 +405,7 @@ public class AnalizadorSintactico {
         if (Character.isDigit(identificador.charAt(0))) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.IDENTIFICADOR_NUMERO_INICIAL,
-                "Identificador de variable no puede comenzar con número: " + identificador);
+                "Identificador de variable no puede comenzar con numero: " + identificador);
         }
         
         if (PalabrasReservadas.esPalabraReservada(identificador)) {
@@ -416,15 +416,15 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Analiza la declaración begin
-     * @param linea Línea con begin
-     * @param numeroLinea Número de línea
+     * Analiza la declaracion begin
+     * @param linea Linea con begin
+     * @param numeroLinea Numero de linea
      */
     private void analizarBegin(String linea, int numeroLinea) {
         if (!linea.trim().equalsIgnoreCase("begin")) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.BEGIN_NO_SOLO,
-                "Begin debe estar solo en su línea sin otros elementos");
+                "Begin debe estar solo en su linea sin otros elementos");
             return;
         }
         
@@ -440,9 +440,9 @@ public class AnalizadorSintactico {
     
     /**
      * Analiza la declaración end
-     * @param linea Línea con end
-     * @param numeroLinea Número de línea
-     * @param esUltimaLinea Si es la última línea
+     * @param linea Linea con end
+     * @param numeroLinea Numero de linea
+     * @param esUltimaLinea Si es la ultima linea
      */
     private void analizarEnd(String linea, int numeroLinea, boolean esUltimaLinea) {
         if (!linea.trim().equals("end.")) {
@@ -470,8 +470,8 @@ public class AnalizadorSintactico {
     
     /**
      * Analiza instrucciones write/writeln
-     * @param linea Línea con write
-     * @param numeroLinea Número de línea
+     * @param linea Linea con write
+     * @param numeroLinea Numero de linea
      */
     private void analizarWrite(String linea, int numeroLinea) {
         if (!beginEncontrado) {
@@ -495,24 +495,24 @@ public class AnalizadorSintactico {
     /**
      * Valida el formato de una instrucción write/writeln
      * @param linea Línea con write
-     * @param numeroLinea Número de línea
+     * @param numeroLinea Número de linea
      */
     private void validarFormatoWrite(String linea, int numeroLinea) {
         String lineaLimpia = linea.trim();
         
-        // Verificar que termine con punto y coma
+        // Verifica que termine con punto y coma
         if (!lineaLimpia.endsWith(";")) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.WRITE_SIN_PUNTO_COMA,
                 "Write/WriteLn debe terminar con punto y coma");
         }
         
-        // Remover punto y coma para análisis
+        // Remueve punto y coma para analisis
         if (lineaLimpia.endsWith(";")) {
             lineaLimpia = lineaLimpia.substring(0, lineaLimpia.length() - 1);
         }
         
-        // Verificar paréntesis
+        // Verifica parentesis
         if (!lineaLimpia.contains("(") || !lineaLimpia.contains(")")) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.WRITE_SIN_PARENTESIS,
@@ -520,7 +520,7 @@ public class AnalizadorSintactico {
             return;
         }
         
-        // Extraer contenido entre paréntesis
+        // Extrae contenido entre parentesis
         int inicioParentesis = lineaLimpia.indexOf("(");
         int finParentesis = lineaLimpia.lastIndexOf(")");
         
@@ -533,22 +533,22 @@ public class AnalizadorSintactico {
         
         String contenido = lineaLimpia.substring(inicioParentesis + 1, finParentesis).trim();
         
-        // Verificar que no esté vacío
+        // Verifica que no este vacío
         if (contenido.isEmpty()) {
             manejadorErrores.agregarError(numeroLinea,
                 CodigosError.WRITE_VACIO,
-                "Write/WriteLn no puede estar vacío");
+                "Write/WriteLn no puede estar vacio");
             return;
         }
         
-        // Validar contenido (cadena o variable)
+        // Valida contenido (cadena o variable)
         validarContenidoWrite(contenido, numeroLinea);
     }
     
     /**
      * Valida el contenido de write/writeln
-     * @param contenido Contenido entre paréntesis
-     * @param numeroLinea Número de línea
+     * @param contenido Contenido entre parentesis
+     * @param numeroLinea Número de linea
      */
     private void validarContenidoWrite(String contenido, int numeroLinea) {
         contenido = contenido.trim();
@@ -561,8 +561,8 @@ public class AnalizadorSintactico {
                     "Cadena en Write/WriteLn mal cerrada: falta comilla final");
             }
         } else if (!contenido.startsWith("'") && !contenido.endsWith("'")) {
-            // Es una variable o expresión - aquí se podría validar si existe
-            // Por simplicidad, asumimos que las variables básicas existen
+            // Es una variable o expresión - aqui se podria validar si existe
+            // Por simplicidad, se asume que las variables basicas existen
             if (!esVariableValida(contenido)) {
                 manejadorErrores.agregarError(numeroLinea,
                     CodigosError.WRITE_VARIABLE_NO_DECLARADA,
@@ -576,12 +576,12 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Verifica si una variable es válida (simplificado)
+     * Verifica si una variable es valida (simplificado)
      * @param variable Variable a verificar
-     * @return true si es válida
+     * @return true si es valida
      */
     private boolean esVariableValida(String variable) {
-        // Verificar que sea un identificador válido
+        // Verifica que sea un identificador valido
         if (variable.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
             // Variables comunes del ejemplo
             Set<String> variablesComunes = Set.of(
@@ -593,20 +593,20 @@ public class AnalizadorSintactico {
     }
     
     /**
-     * Elimina comentarios de una línea
-     * @param linea Línea original
-     * @return Línea sin comentarios
+     * Elimina comentarios de una linea
+     * @param linea Linea original
+     * @return Linea sin comentarios
      */
     private String eliminarComentarios(String linea) {
         String resultado = linea;
         
-        // Eliminar comentarios //
+        // Elimina comentarios //
         int posSlash = resultado.indexOf("//");
         if (posSlash != -1) {
             resultado = resultado.substring(0, posSlash);
         }
         
-        // Eliminar comentarios {}
+        // Elimina comentarios {}
         int posInicioLlave = resultado.indexOf("{");
         int posFinLlave = resultado.indexOf("}");
         if (posInicioLlave != -1 && posFinLlave != -1 && posFinLlave > posInicioLlave) {
@@ -623,22 +623,22 @@ public class AnalizadorSintactico {
     private void validarEstructuraCompleta() {
         if (!programEncontrado) {
             manejadorErrores.agregarError(CodigosError.PROGRAM_NO_ENCONTRADO,
-                "No se encontró la declaración 'program' al inicio del archivo");
+                "No se encontro la declaración 'program' al inicio del archivo");
         }
         
         if (!usesEncontrado) {
             manejadorErrores.agregarError(CodigosError.USES_NO_ENCONTRADO,
-                "No se encontró la declaración 'uses' después de program");
+                "No se encontro la declaración 'uses' después de program");
         }
         
         if (!beginEncontrado) {
             manejadorErrores.agregarError(CodigosError.BEGIN_UBICACION_INCORRECTA,
-                "No se encontró la declaración 'begin'");
+                "No se encontro la declaración 'begin'");
         }
         
         if (!endEncontrado) {
             manejadorErrores.agregarError(CodigosError.END_UBICACION_INCORRECTA,
-                "No se encontró la declaración 'end.' al final del archivo");
+                "No se encontro la declaración 'end.' al final del archivo");
         }
     }
 }

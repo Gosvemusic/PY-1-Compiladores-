@@ -3,7 +3,7 @@ package main;
 import analizador.*;
 import java.io.File;
 
-/**
+/**Javier Rojas Cordero
  * Clase principal del Analizador PASCAL
  * Compiladores - Proyecto 1
  * 
@@ -12,7 +12,7 @@ import java.io.File;
 public class Main {
     
     public static void main(String[] args) {
-        // Verificar argumentos de línea de comandos
+        // Verifica argumentos de linea de comandos
         if (args.length != 1) {
             System.err.println("Error: Debe proporcionar el nombre del archivo .pas");
             System.err.println("Uso: java -jar AnalizadorPascal.jar archivo.pas");
@@ -21,52 +21,52 @@ public class Main {
         
         String nombreArchivo = args[0];
         
-        // Verificar que el archivo tenga extensión .pas
+        // Verifica que el archivo tenga extension .pas
         if (!nombreArchivo.toLowerCase().endsWith(".pas")) {
-            System.err.println("Error: El archivo debe tener extensión .pas");
+            System.err.println("Error: El archivo debe tener extension .pas");
             System.exit(1);
         }
         
-        // Verificar que el archivo existe
+        // Verifica que el archivo exista
         File archivo = new File(nombreArchivo);
         if (!archivo.exists()) {
-            System.err.println("Error: No se encontró el archivo " + nombreArchivo);
+            System.err.println("Error: No se encontro el archivo " + nombreArchivo);
             System.exit(1);
         }
         
         try {
             System.out.println("Analizando archivo: " + nombreArchivo);
             
-            // Crear componentes del analizador
+            // Crea componentes del analizador
             LectorArchivos lector = new LectorArchivos();
             ManejadorErrores manejadorErrores = new ManejadorErrores(nombreArchivo);
             AnalizadorLexico analizadorLexico = new AnalizadorLexico(manejadorErrores);
             AnalizadorSintactico analizadorSintactico = new AnalizadorSintactico(manejadorErrores);
             
-            // Leer el archivo
+            // Lee el archivo
             String contenido = lector.leerArchivo(nombreArchivo);
             
-            // Realizar análisis léxico
+            // Realiza analisis lexico
             analizadorLexico.analizar(contenido);
             
-            // Realizar análisis sintáctico
+            // Realiza analisis sintactico
             analizadorSintactico.analizar(contenido, analizadorLexico.getTokens());
             
-            // Generar archivo de errores
+            // Genera archivo de errores
             manejadorErrores.generarArchivoErrores(contenido);
             
-            // Mostrar resumen
+            // Muestra un resumen
             int totalErrores = manejadorErrores.getTotalErrores();
             if (totalErrores == 0) {
-                System.out.println("✓ Análisis completado sin errores");
+                System.out.println("✓ Analisis completado sin errores");
             } else {
-                System.out.println("✗ Análisis completado con " + totalErrores + " error(es)");
+                System.out.println("✗ Aaálisis completado con " + totalErrores + " error(es)");
             }
             
             System.out.println("Archivo de errores generado: " + manejadorErrores.getNombreArchivoErrores());
             
         } catch (Exception e) {
-            System.err.println("Error durante el análisis: " + e.getMessage());
+            System.err.println("Error durante el analisis: " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }

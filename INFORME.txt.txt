@@ -1,0 +1,165 @@
+INFORME - Analizador PASCAL
+INFORMACIÓN DEL ESTUDIANTE:
+Javier Rojas Cordero
+117140322
+Curso: Compiladores - Código 03307
+Universidad Estatal a Distancia
+Proyecto: 1 - Analizador Léxico y Sintáctico PASCAL
+PASOS PARA EJECUTAR EL PROGRAMA:
+
+MÉTODO 1 - LÍNEA DE COMANDOS:
+
+Abrir el símbolo del sistema (CMD) en Windows
+Navegar a la carpeta donde está el archivo JavierRojasCorderoPY1C.jar
+Colocar el archivo .pas a analizar en la misma carpeta que el .jar
+Ejecutar el siguiente comando:
+java -jar JavierRojasCorderoPY1C.jar calendario.pas
+
+EJEMPLO DE USO:
+java -jar JavierRojasCorreroPY1C.jar calendario.pas
+
+MÉTODO 2 - DESDE NETBEANS:
+
+Abrir el proyecto en Apache NetBeans
+Click derecho en el proyecto → Properties
+En Categories, seleccionar "Run"
+En "Arguments" escribir: calendario.pas
+En "Working Directory" poner: C:\Users\Javier\Desktop\JavierRojasCorderoPY1C\dist
+Presionar OK
+Ejecutar con Run → Run Project (F6)
+
+ARCHIVOS DE PRUEBA INCLUIDOS:
+ARCHIVO 1 - calendario.pas (SIN ERRORES):
+Contiene un programa PASCAL válido que debe analizar sin errores.
+ARCHIVO 2 - test_errores.pas (CON ERRORES INTENCIONADOS):
+Contiene errores como:
+
+"programa" en lugar de "program"
+Identificadores que empiezan con números
+Uso de palabras reservadas como variables
+Instrucciones Write vacías
+
+RESULTADOS ESPERADOS:
+PARA ARCHIVO SIN ERRORES:
+
+Mensaje: "Analizando archivo: calendario.pas"
+Mensaje: "✓ Análisis completado sin errores"
+Mensaje: "Archivo de errores generado: calendario-errores.err"
+Se crea el archivo calendario-errores.err con las líneas numeradas
+
+PARA ARCHIVO CON ERRORES:
+
+Mensaje: "Analizando archivo: test_errores.pas"
+Mensaje: "✗ Análisis completado con X error(es)"
+Mensaje: "Archivo de errores generado: test_errores-errores.err"
+Se crea el archivo con líneas numeradas Y lista de errores al final
+
+FORMATO DEL ARCHIVO DE SALIDA:
+El archivo [nombre]-errores.err contiene:
+
+Líneas numeradas con formato 0001, 0002, 0003...
+Contenido original del archivo preservado exactamente
+Si hay errores, aparecen al final con formato:
+Error XXX. Línea YYYY. Descripción del error
+
+EJEMPLO:
+0001 program calendario;
+0002 uses crt, dos;
+0003 var x : integer;
+0004 begin
+0005 end.
+ERRORES ENCONTRADOS:
+Error 405. Línea 0005. No se encontró la declaración 'end.' al final del archivo
+REQUISITOS TÉCNICOS:
+
+Java Runtime Environment (JRE) 8 o superior
+Sistema operativo: Windows (probado), Linux o Mac
+El archivo .pas debe estar en la misma carpeta que el .jar
+No requiere instalaciones adicionales
+
+FUNCIONALIDADES IMPLEMENTADAS:
+
+LECTURA DE ARCHIVOS:
+
+Acepta archivos .pas por parámetro de línea de comandos
+Valida que el archivo exista y tenga extensión .pas
+Mantiene formato original del archivo (espacios, líneas vacías)
+
+
+ANÁLISIS LÉXICO:
+
+Identifica tokens (palabras reservadas, identificadores, operadores)
+Valida identificadores según reglas PASCAL
+Detecta uso incorrecto de palabras reservadas
+
+
+ANÁLISIS SINTÁCTICO:
+
+Verifica estructura: program → uses → const → var → begin → end
+Valida que el nombre del programa coincida con el archivo
+Verifica formato correcto de declaraciones
+
+
+DETECCIÓN DE ERRORES:
+
+44 tipos diferentes de errores implementados
+Códigos de error organizados por categorías (100-699)
+Reportes específicos y detallados
+
+
+GENERACIÓN DE REPORTES:
+
+Archivo .err con numeración de líneas
+Lista de errores con ubicación exacta
+Preserva formato original del código
+
+
+
+CASOS DE PRUEBA VERIFICADOS:
+
+Programa válido completo (calendario.pas) - 0 errores
+Programa con errores de estructura - detecta correctamente
+Identificadores inválidos - detecta y reporta
+Palabras reservadas como variables - detecta error
+Instrucciones Write malformadas - detecta errores
+Comentarios en ubicaciones incorrectas - detecta errores
+Archivo inexistente - maneja error apropiadamente
+Sin parámetros - muestra mensaje de uso correcto
+
+Se ha verificado que:
+
+El programa compila sin errores en NetBeans
+El archivo .jar se ejecuta correctamente desde CMD
+Ambos archivos de prueba funcionan como se espera
+Los archivos .err se generan con el formato correcto
+Todos los tipos de error se detectan apropiadamente
+Las instrucciones de este documento funcionan correctamente
+
+INFORMACIÓN ADICIONAL:
+ARQUITECTURA DEL PROYECTO:
+
+Diseño modular con separación de responsabilidades
+Paquete 'analizador' con las clases principales
+Paquete 'tokens' con definiciones de tokens y palabras reservadas
+Paquete 'utils' con funciones auxiliares de validación
+
+DECISIONES DE DISEÑO:
+
+Se usa análisis línea por línea para mayor simplicidad
+Los errores se acumulan y reportan al final
+Se mantiene compatibilidad con diferentes sistemas operativos
+El código está documentado con comentarios explicativos
+
+LIMITACIONES CONOCIDAS:
+
+Validación simplificada de expresiones complejas
+Reconocimiento básico de variables del ejemplo calendario.pas
+
+NOTA IMPORTANTE:
+El archivo .jar debe ejecutarse desde la misma carpeta donde está ubicado el archivo .pas a analizar. El programa es completamente portable y no depende de rutas específicas del sistema.
+En caso de problemas con la ejecución, verificar:
+
+Que Java esté instalado y en el PATH del sistema
+Que el archivo .pas esté en la misma carpeta que el .jar
+Que se esté usando la sintaxis correcta del comando
+

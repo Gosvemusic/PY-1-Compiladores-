@@ -1,7 +1,7 @@
 package tokens;
 
 /**
- * Enumeración que define los tipos de tokens en PASCAL
+ * Enumeracion que define los tipos de tokens en PASCAL
  */
 public enum TipoToken {
     // Palabras reservadas del lenguaje
@@ -10,16 +10,16 @@ public enum TipoToken {
     // Identificadores (variables, constantes, nombres de programa)
     IDENTIFICADOR,
     
-    // Números enteros
+    // Numeros enteros
     NUMERO,
     
     // Cadenas de texto entre comillas simples
     CADENA,
     
-    // Operadores matemáticos y lógicos
+    // Operadores matematicos y logicos
     OPERADOR,
     
-    // Delimitadores (paréntesis, punto y coma, etc.)
+    // Delimitadores (parentesis, punto y coma, etc.)
     DELIMITADOR,
     
     // Comentarios
@@ -31,7 +31,7 @@ public enum TipoToken {
     // Espacios en blanco
     ESPACIO,
     
-    // Final de línea
+    // Final de linea
     NUEVA_LINEA,
     
     // Final de archivo
@@ -39,7 +39,7 @@ public enum TipoToken {
     
     /**
      * Convierte el tipo de token a una representación legible
-     * @return Descripción del tipo de token
+     * @return Descripcion del tipo de token
      */
     @Override
     public String toString() {
@@ -49,7 +49,7 @@ public enum TipoToken {
             case IDENTIFICADOR:
                 return "Identificador";
             case NUMERO:
-                return "Número";
+                return "Numero";
             case CADENA:
                 return "Cadena";
             case OPERADOR:
@@ -61,7 +61,7 @@ public enum TipoToken {
             case ESPACIO:
                 return "Espacio";
             case NUEVA_LINEA:
-                return "Nueva Línea";
+                return "Nueva Linea";
             case FIN_ARCHIVO:
                 return "Fin de Archivo";
             case DESCONOCIDO:
@@ -71,8 +71,8 @@ public enum TipoToken {
     }
     
     /**
-     * Verifica si el token es significativo para el análisis sintáctico
-     * @return true si el token debe ser procesado sintácticamente
+     * Verifica si el token es significativo para el analisis sintactico
+     * @return true si el token debe ser procesado sintacticamente
      */
     public boolean esSignificativo() {
         return this != ESPACIO && 
@@ -81,7 +81,7 @@ public enum TipoToken {
     }
     
     /**
-     * Verifica si el token puede ser parte de una expresión
+     * Verifica si el token puede ser parte de una expresion
      * @return true si puede formar parte de expresiones
      */
     public boolean esExpresion() {

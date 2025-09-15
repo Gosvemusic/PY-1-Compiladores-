@@ -1,7 +1,7 @@
 package tokens;
 
 /**
- * Clase que representa un token individual en el análisis léxico
+ * Clase que representa un token individual en el analisis lexico
  */
 public class Token {
     private final TipoToken tipo;
@@ -15,10 +15,10 @@ public class Token {
      * Constructor completo del token
      * @param tipo Tipo del token
      * @param valor Valor textual del token
-     * @param numeroLinea Número de línea (1-based)
-     * @param posicionColumna Posición en la columna (1-based)
-     * @param posicionInicial Posición inicial en el texto
-     * @param posicionFinal Posición final en el texto
+     * @param numeroLinea Numero de linea (1-based)
+     * @param posicionColumna Posicion en la columna (1-based)
+     * @param posicionInicial Posicion inicial en el texto
+     * @param posicionFinal Posicion final en el texto
      */
     public Token(TipoToken tipo, String valor, int numeroLinea, int posicionColumna, 
                  int posicionInicial, int posicionFinal) {
@@ -34,15 +34,15 @@ public class Token {
      * Constructor simplificado del token
      * @param tipo Tipo del token
      * @param valor Valor textual del token
-     * @param numeroLinea Número de línea
-     * @param posicionColumna Posición en la columna
+     * @param numeroLinea Numero de linea
+     * @param posicionColumna Posicion en la columna
      */
     public Token(TipoToken tipo, String valor, int numeroLinea, int posicionColumna) {
         this(tipo, valor, numeroLinea, posicionColumna, -1, -1);
     }
     
     /**
-     * Constructor básico del token
+     * Constructor basico del token
      * @param tipo Tipo del token
      * @param valor Valor textual del token
      */
@@ -120,7 +120,7 @@ public class Token {
     }
     
     /**
-     * Verifica si el token es significativo para el análisis
+     * Verifica si el token es significativo para el analisis
      * @return true si debe ser procesado
      */
     public boolean esSignificativo() {
@@ -164,11 +164,11 @@ public class Token {
     }
     
     /**
-     * Representación detallada del token para debugging
-     * @return String con información completa del token
+     * Representacion detallada del token para debugging
+     * @return String con informacion completa del token
      */
     public String toStringDetallado() {
-        return String.format("Token{tipo=%s, valor='%s', línea=%d, columna=%d, pos=[%d-%d]}", 
+        return String.format("Token{tipo=%s, valor='%s', linea=%d, columna=%d, pos=[%d-%d]}", 
                            tipo, valor, numeroLinea, posicionColumna, 
                            posicionInicial, posicionFinal);
     }

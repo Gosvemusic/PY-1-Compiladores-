@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Clase encargada del manejo y reporte de errores
- * Genera el archivo .err con formato específico
+ * Genera el archivo .err con formato especifico
  */
 public class ManejadorErrores {
     
@@ -43,17 +43,17 @@ public class ManejadorErrores {
     /**
      * Agrega un error a la lista
      * @param numeroLinea Número de línea donde ocurre el error (1-based)
-     * @param numeroError Código del error
-     * @param descripcion Descripción del error
+     * @param numeroError Codigo del error
+     * @param descripcion Descripcion del error
      */
     public void agregarError(int numeroLinea, int numeroError, String descripcion) {
         errores.add(new ErrorInfo(numeroLinea, numeroError, descripcion));
     }
     
     /**
-     * Agrega un error sin número de línea específico
-     * @param numeroError Código del error
-     * @param descripcion Descripción del error
+     * Agrega un error sin numero de linea especifico
+     * @param numeroError Codigo del error
+     * @param descripcion Descripcion del error
      */
     public void agregarError(int numeroError, String descripcion) {
         errores.add(new ErrorInfo(-1, numeroError, descripcion));
@@ -68,13 +68,13 @@ public class ManejadorErrores {
         StringBuilder contenido = new StringBuilder();
         String[] lineas = contenidoOriginal.split("\n");
         
-        // Agregar contenido original con numeración
+        // Agrega contenido original con numeracion
         for (int i = 0; i < lineas.length; i++) {
             String numeroLinea = String.format("%04d", i + 1);
             contenido.append(numeroLinea).append(" ").append(lineas[i]).append("\n");
         }
         
-        // Agregar errores al final
+        // Agrega errores al final
         if (!errores.isEmpty()) {
             contenido.append("\n");
             contenido.append("ERRORES ENCONTRADOS:\n");
@@ -82,7 +82,7 @@ public class ManejadorErrores {
             
             for (ErrorInfo error : errores) {
                 if (error.numeroLinea > 0) {
-                    contenido.append(String.format("Error %d. Línea %04d. %s\n", 
+                    contenido.append(String.format("Error %d. Linea %04d. %s\n", 
                         error.numeroError, error.numeroLinea, error.descripcion));
                 } else {
                     contenido.append(String.format("Error %d. %s\n", 
@@ -91,14 +91,14 @@ public class ManejadorErrores {
             }
         }
         
-        // Escribir archivo
+        // Escribe un archivo
         LectorArchivos lector = new LectorArchivos();
         lector.escribirArchivo(nombreArchivoErrores, contenido.toString());
     }
     
     /**
      * Obtiene el total de errores encontrados
-     * @return Número total de errores
+     * @return Numero total de errores
      */
     public int getTotalErrores() {
         return errores.size();
@@ -129,7 +129,7 @@ public class ManejadorErrores {
     }
     
     /**
-     * Clase interna para almacenar información de errores
+     * Clase interna para almacenar informacion de errores
      */
     private static class ErrorInfo {
         final int numeroLinea;
