@@ -93,7 +93,7 @@ public class Token {
     }
     
     /**
-     * Verifica si el token tiene un valor específico (case-insensitive)
+     * Verifica si el token tiene un valor especifico (case-insensitive)
      * @param valor Valor a verificar
      * @return true si coincide el valor
      */
@@ -154,7 +154,7 @@ public class Token {
         sb.append("tipo=").append(tipo);
         sb.append(", valor='").append(valor).append('\'');
         if (numeroLinea > 0) {
-            sb.append(", línea=").append(numeroLinea);
+            sb.append(", linea=").append(numeroLinea);
         }
         if (posicionColumna > 0) {
             sb.append(", columna=").append(posicionColumna);

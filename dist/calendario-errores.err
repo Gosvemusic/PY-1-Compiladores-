@@ -4,170 +4,152 @@
 0004 const borde = #205#205#205#205#205#205#205#205#205;
 0005 const months       : array[0..11] of integer = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 0006 const year_regular : array[0..11] of integer = ( 0,  3,  3,  6,  1,  4,  6,  2,  5,  0,  3,  5);
-0007 const year_bisiesto: array[0..11] of integer = ( 0,  3,  4,  0,  2,  5,  0,  3,  6,  1,  4,  6);
+0007 const year_bisiesto : array[0..11] of integer = ( 0,  3,  4,  0,  2,  5,  0,  3,  6,  1,  4,  6);
 0008 const nombres      : array[0..11] of string  = (
 0009     '  Enero   ', ' Febrero  ', '  Marzo   ', '  Abril   ',
 0010     '   Mayo   ', '  Junio   ', '  Julio   ', '  Agosto  ',
 0011     'Septiembre', ' Octubre  ', 'Noviembre ', 'Diciembre ');
 0012 
 0013 var meses : array[0..11] of integer;
-0014 var tecla, i, dia, modulo : integer;
-0015 var day, year, mes, dayofweek: word;
-0016 
-0017 begin
-0018 {inicio del programa}
-0019     for i:=0 to 11 do
-0020         begin
-0021             meses[i] := months[i];
-0022         end;
-0023     getdate (year, mes , day, dayofweek);
-0024     dec (mes);
-0025     repeat
+0014 var tecla : integer;
+0015 var i : integer;
+0016 var dia : integer;
+0017 var modulo : integer;
+0018 var day : word;
+0019 var year : word;
+0020 var mes : word;
+0021 var dayofweek : word;
+0022 
+0023 begin
+0024 {inicio del programa}
+0025     for i:=0 to 11 do
 0026         begin
-0027             if (((year mod 4) = 0) and ((year mod 100) <> 0)) or ((year mod 400) = 0) then
-0028                 begin
-0029                     meses[1] := 29;
-0030                     modulo := year_bisiesto[mes];
-0031                 end
-0032             else
-0033                 begin
-0034                     meses[1] := 28;
-0035                     modulo := year_regular[mes];
-0036                 end;
-0037             dia := 1 - ((year - 1) mod 7 + ((year - 1) div 4 - (3 * ((year - 1) div 100 + 1)) div 4) mod 7 + modulo + 1) mod 7;
-0038             clrscr;
-0039             writeln ('          '#17, nombres[mes], #16'                       '#30, year, #31);
-0040             writeln (#201, borde, #203, borde, #203, borde, #203, borde, #203, borde, #203, borde, #203, borde, #187);
-0041             write   (#186' Domingo '#186'  Lunes  '#186' Martes  '#186'Mi'#130'rcoles'#186' Jueves  '#186' Viernes ');
-0042             writeln (#186' S'#160'bado  '#186);
-0043             writeln (#204, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #185);
-0044             while dia <= meses[mes] do
-0045                 begin
-0046                     for i:=0 to 6 do
-0047                         begin
-0048                             if (dia<1) or (dia>meses[mes]) then
-0049                                 begin
-0050                                     write (#186'         ')
-0051                                 end	
-0052                             else
-0053                                 begin
-0054                                     write (#186'   ', dia:2, '    ');
-0055                                 end;	
-0056                             inc (dia);
-0057                         end;
-0058                     writeln (#186);
-0059                     if dia<=meses[mes] then
-0060                         begin
-0061                             writeln (#204, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #185)
-0062                         end	
-0063                     else
-0064                         begin
-0065                             writeln (#200, borde, #202, borde, #202, borde, #202, borde, #202, borde, #202, borde, #202, borde, #188);
-0066                         end; 
-0067                 end;
-0068             writeln ('Presione '#27' y '#26' para cambiar de mes.');
-0069             writeln ('Presione '#24' y '#25' para cambiar de a'#164'o.');
-0070             writeln ('Presione ESC para salir.');
-0071             repeat
-0072                 begin
-0073                     tecla := ord (readkey);
-0074                 end;
-0075             until (tecla=0) or (tecla=27);
-0076             if tecla = 0 then
-0077                 begin
-0078                     case ord (readkey) of
-0079                         72: inc (year);
-0080                         80: dec (year);
-0081                         77:
-0082                         if mes<11 then
-0083                             begin
-0084                                 inc (mes);
-0085                             end	
-0086                         else
-0087                             begin
-0088                                 inc (year);
-0089                                 mes := 0;
-0090                             end;
-0091                         75:
-0092                             if mes <> 0 then
-0093                                 begin
-0094                                     dec (mes);
-0095                                 end
-0096                             else
-0097                                 begin
-0098                                     dec (year);
-0099                                     mes := 11;
-0100                                 end;
-0101                end;
-0102           end;	
-0103         end;
-0104     until tecla = 27;
-0105     //fin del programa
-0106 end.
+0027             meses[i] := months[i];
+0028         end;
+0029     getdate (year, mes , day, dayofweek);
+0030     dec (mes);
+0031     repeat
+0032         begin
+0033             if (((year mod 4) = 0) and ((year mod 100) <> 0)) or ((year mod 400) = 0) then
+0034                 begin
+0035                     meses[1] := 29;
+0036                     modulo := year_bisiesto[mes];
+0037                 end
+0038             else
+0039                 begin
+0040                     meses[1] := 28;
+0041                     modulo := year_regular[mes];
+0042                 end;
+0043             dia := 1 - ((year - 1) mod 7 + ((year - 1) div 4 - (3 * ((year - 1) div 100 + 1)) div 4) mod 7 + modulo + 1) mod 7;
+0044             clrscr;
+0045             writeln ('          '#17, nombres[mes], #16'                       '#30, year, #31);
+0046             writeln (#201, borde, #203, borde, #203, borde, #203, borde, #203, borde, #203, borde, #203, borde, #187);
+0047             write   (#186' Domingo '#186'  Lunes  '#186' Martes  '#186'Mi'#130'rcoles'#186' Jueves  '#186' Viernes ');
+0048             writeln (#186' S'#160'bado  '#186);
+0049             writeln (#204, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #185);
+0050             while dia <= meses[mes] do
+0051                 begin
+0052                     for i:=0 to 6 do
+0053                         begin
+0054                             if (dia<1) or (dia>meses[mes]) then
+0055                                 begin
+0056                                     write (#186'         ')
+0057                                 end	
+0058                             else
+0059                                 begin
+0060                                     write (#186'   ', dia:2, '    ');
+0061                                 end;	
+0062                             inc (dia);
+0063                         end;
+0064                     writeln (#186);
+0065                     if dia<=meses[mes] then
+0066                         begin
+0067                             writeln (#204, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #206, borde, #185)
+0068                         end	
+0069                     else
+0070                         begin
+0071                             writeln (#200, borde, #202, borde, #202, borde, #202, borde, #202, borde, #202, borde, #202, borde, #188);
+0072                         end; 
+0073                 end;
+0074             writeln ('Presione '#27' y '#26' para cambiar de mes.');
+0075             writeln ('Presione '#24' y '#25' para cambiar de a'#164'o.');
+0076             writeln ('Presione ESC para salir.');
+0077             repeat
+0078                 begin
+0079                     tecla := ord (readkey);
+0080                 end;
+0081             until (tecla=0) or (tecla=27);
+0082             if tecla = 0 then
+0083                 begin
+0084                     case ord (readkey) of
+0085                         72: inc (year);
+0086                         80: dec (year);
+0087                         77:
+0088                         if mes<11 then
+0089                             begin
+0090                                 inc (mes);
+0091                             end	
+0092                         else
+0093                             begin
+0094                                 inc (year);
+0095                                 mes := 0;
+0096                             end;
+0097                         75:
+0098                             if mes <> 0 then
+0099                                 begin
+0100                                     dec (mes);
+0101                                 end
+0102                             else
+0103                                 begin
+0104                                     dec (year);
+0105                                     mes := 11;
+0106                                 end;
+0107                end;
+0108           end;	
+0109         end;
+0110     until tecla = 27;
+0111     //fin del programa
+0112 end. 
 
 ERRORES ENCONTRADOS:
 ====================
-Error 203. Linea 0004. Token no reconocido: #205#205#205#205#205#205#205#205#205
-Error 203. Linea 0039. Token no reconocido: '          '#17
-Error 203. Linea 0039. Token no reconocido: #16'                       '#30
-Error 203. Linea 0039. Token no reconocido: #31
-Error 203. Linea 0040. Token no reconocido: #201
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #203
-Error 203. Linea 0040. Token no reconocido: #187
-Error 203. Linea 0041. Token no reconocido: #186' Domingo '#186'  Lunes  '#186' Martes  '#186'Mi'#130'rcoles'#186' Jueves  '#186' Viernes '
-Error 203. Linea 0042. Token no reconocido: #186' S'#160'bado  '#186
-Error 203. Linea 0043. Token no reconocido: #204
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #206
-Error 203. Linea 0043. Token no reconocido: #185
-Error 203. Linea 0048. Token no reconocido: dia<1
-Error 203. Linea 0048. Token no reconocido: dia>meses
-Error 203. Linea 0050. Token no reconocido: #186'         '
-Error 203. Linea 0054. Token no reconocido: #186'   '
-Error 203. Linea 0058. Token no reconocido: #186
-Error 203. Linea 0059. Token no reconocido: dia<
-Error 203. Linea 0061. Token no reconocido: #204
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #206
-Error 203. Linea 0061. Token no reconocido: #185
-Error 203. Linea 0065. Token no reconocido: #200
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #202
-Error 203. Linea 0065. Token no reconocido: #188
-Error 203. Linea 0082. Token no reconocido: mes<11
+Error 203. Linea 0045. Token no reconocido: #16'
+Error 203. Linea 0045. Token no reconocido: '#30, year, #31);
+Error 203. Linea 0047. Token no reconocido: #186'
+Error 203. Linea 0047. Token no reconocido: ');
+Error 203. Linea 0048. Token no reconocido: #186'
+Error 203. Linea 0048. Token no reconocido: '#186);
+Error 203. Linea 0056. Token no reconocido: #186'
+Error 203. Linea 0056. Token no reconocido: ')
+Error 203. Linea 0060. Token no reconocido: #186'
+Error 203. Linea 0060. Token no reconocido: ');
+Error 203. Linea 0074. Token no reconocido: ');
+Error 203. Linea 0075. Token no reconocido: ');
 Error 303. Linea 0008. Declaracion de constante debe terminar con punto y coma
-Error 204. Linea 0014. Declaración debe comenzar con 'var'
-Error 204. Linea 0015. Declaración debe comenzar con 'var'
-Error 402. Linea 0020. Begin ya fue declarado anteriormente
+Error 205. Linea 0013. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0014. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0015. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0016. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0017. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0018. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0019. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0020. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
+Error 205. Linea 0021. Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;
 Error 402. Linea 0026. Begin ya fue declarado anteriormente
-Error 402. Linea 0028. Begin ya fue declarado anteriormente
-Error 402. Linea 0033. Begin ya fue declarado anteriormente
-Error 402. Linea 0045. Begin ya fue declarado anteriormente
-Error 402. Linea 0047. Begin ya fue declarado anteriormente
-Error 402. Linea 0049. Begin ya fue declarado anteriormente
+Error 402. Linea 0032. Begin ya fue declarado anteriormente
+Error 402. Linea 0034. Begin ya fue declarado anteriormente
+Error 402. Linea 0039. Begin ya fue declarado anteriormente
+Error 402. Linea 0051. Begin ya fue declarado anteriormente
 Error 402. Linea 0053. Begin ya fue declarado anteriormente
-Error 402. Linea 0060. Begin ya fue declarado anteriormente
-Error 402. Linea 0064. Begin ya fue declarado anteriormente
-Error 402. Linea 0072. Begin ya fue declarado anteriormente
-Error 402. Linea 0077. Begin ya fue declarado anteriormente
+Error 402. Linea 0055. Begin ya fue declarado anteriormente
+Error 505. Linea 0056. Write/Writeln debe terminar con punto y coma
+Error 402. Linea 0059. Begin ya fue declarado anteriormente
+Error 402. Linea 0066. Begin ya fue declarado anteriormente
+Error 505. Linea 0067. Write/Writeln debe terminar con punto y coma
+Error 402. Linea 0070. Begin ya fue declarado anteriormente
+Error 402. Linea 0078. Begin ya fue declarado anteriormente
 Error 402. Linea 0083. Begin ya fue declarado anteriormente
-Error 402. Linea 0087. Begin ya fue declarado anteriormente
+Error 402. Linea 0089. Begin ya fue declarado anteriormente
 Error 402. Linea 0093. Begin ya fue declarado anteriormente
-Error 402. Linea 0097. Begin ya fue declarado anteriormente
+Error 402. Linea 0099. Begin ya fue declarado anteriormente
+Error 402. Linea 0103. Begin ya fue declarado anteriormente

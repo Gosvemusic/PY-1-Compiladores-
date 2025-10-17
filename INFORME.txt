@@ -13,10 +13,21 @@ Abrir el símbolo del sistema (CMD) en Windows
 Navegar a la carpeta donde está el archivo JavierRojasCorderoPY1C.jar
 Colocar el archivo .pas a analizar en la misma carpeta que el .jar
 Ejecutar el siguiente comando:
-java -jar JavierRojasCorderoPY1C.jar calendario.pas
 
-EJEMPLO DE USO:
-java -jar JavierRojasCorreroPY1C.jar calendario.pas
+cd C:\Users\Javier\Desktop\JavierRojasCorderoPY1C\dist
+PASO 1: Ir a la ubicación correcta
+
+dir
+PASO 2: Verifica que tenemos calendario.pas y el JAR
+
+java -jar JavierRojasCorderoPY1C.jar calendario.pas
+PASO 3: Ejecuta análisis (genera calendario-errores.err)
+
+dir *.err
+PASO 4: Confirma que se creó el archivo de errores
+
+type calendario-errores.err
+PASO 5: Ve los resultados del análisis
 
 MÉTODO 2 - DESDE NETBEANS:
 
@@ -28,7 +39,7 @@ En "Working Directory" poner: C:\Users\Javier\Desktop\JavierRojasCorderoPY1C\dis
 Presionar OK
 Ejecutar con Run → Run Project (F6)
 
-ARCHIVOS DE PRUEBA INCLUIDOS:
+ARCHIVOS DE PRUEBA AGREGADOS:
 ARCHIVO 1 - calendario.pas (SIN ERRORES):
 Contiene un programa PASCAL válido que debe analizar sin errores.
 ARCHIVO 2 - test_errores.pas (CON ERRORES INTENCIONADOS):
@@ -43,7 +54,7 @@ RESULTADOS ESPERADOS:
 PARA ARCHIVO SIN ERRORES:
 
 Mensaje: "Analizando archivo: calendario.pas"
-Mensaje: "✓ Análisis completado sin errores"
+Mensaje: "Análisis completado sin errores"
 Mensaje: "Archivo de errores generado: calendario-errores.err"
 Se crea el archivo calendario-errores.err con las líneas numeradas
 
@@ -55,7 +66,7 @@ Mensaje: "Archivo de errores generado: test_errores-errores.err"
 Se crea el archivo con líneas numeradas Y lista de errores al final
 
 FORMATO DEL ARCHIVO DE SALIDA:
-El archivo [nombre]-errores.err contiene:
+El archivo [nombre]-errores.err tiene:
 
 Líneas numeradas con formato 0001, 0002, 0003...
 Contenido original del archivo preservado exactamente
@@ -114,31 +125,9 @@ Lista de errores con ubicación exacta
 Preserva formato original del código
 
 
-
-CASOS DE PRUEBA VERIFICADOS:
-
-Programa válido completo (calendario.pas) - 0 errores
-Programa con errores de estructura - detecta correctamente
-Identificadores inválidos - detecta y reporta
-Palabras reservadas como variables - detecta error
-Instrucciones Write malformadas - detecta errores
-Comentarios en ubicaciones incorrectas - detecta errores
-Archivo inexistente - maneja error apropiadamente
-Sin parámetros - muestra mensaje de uso correcto
-
-Se ha verificado que:
-
-El programa compila sin errores en NetBeans
-El archivo .jar se ejecuta correctamente desde CMD
-Ambos archivos de prueba funcionan como se espera
-Los archivos .err se generan con el formato correcto
-Todos los tipos de error se detectan apropiadamente
-Las instrucciones de este documento funcionan correctamente
-
-INFORMACIÓN ADICIONAL:
+INFORMACIÓN EXTRA:
 ARQUITECTURA DEL PROYECTO:
 
-Diseño modular con separación de responsabilidades
 Paquete 'analizador' con las clases principales
 Paquete 'tokens' con definiciones de tokens y palabras reservadas
 Paquete 'utils' con funciones auxiliares de validación
@@ -150,13 +139,8 @@ Los errores se acumulan y reportan al final
 Se mantiene compatibilidad con diferentes sistemas operativos
 El código está documentado con comentarios explicativos
 
-LIMITACIONES CONOCIDAS:
-
-Validación simplificada de expresiones complejas
-Reconocimiento básico de variables del ejemplo calendario.pas
-
 NOTA IMPORTANTE:
-El archivo .jar debe ejecutarse desde la misma carpeta donde está ubicado el archivo .pas a analizar. El programa es completamente portable y no depende de rutas específicas del sistema.
+El archivo .jar debe ejecutarse desde la misma carpeta donde está ubicado el archivo .pas a analizar
 En caso de problemas con la ejecución, verificar:
 
 Que Java esté instalado y en el PATH del sistema

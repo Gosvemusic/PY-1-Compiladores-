@@ -15,7 +15,7 @@ public class ValidadorIdentificadores {
     private static final Pattern PATRON_NUMERO_DECIMAL = Pattern.compile("^\\d+\\.\\d+$");
     
     /**
-     * Valida si un identificador es valido según las reglas de PASCAL
+     * Valida si un identificador es valido segun las reglas de PASCAL
      * @param identificador Identificador a validar
      * @return ResultadoValidacion con el resultado y mensaje de error
      */
@@ -44,7 +44,7 @@ public class ValidadorIdentificadores {
                 ". Solo se permiten letras, numeros y guiones bajos");
         }
         
-        // Verificar que no sea palabra reservada
+        // Verifica que no sea palabra reservada
         if (PalabrasReservadas.esPalabraReservada(id)) {
             return new ResultadoValidacion(false, 
                 "No se puede usar palabra reservada como identificador: " + id);
@@ -161,13 +161,13 @@ public class ValidadorIdentificadores {
         // Verifica que empiece con 'const'
         if (!decl.toLowerCase().startsWith("const ")) {
             return new ResultadoValidacion(false, 
-                "Declaración de constante debe comenzar con 'const'");
+                "Declaracion de constante debe comenzar con 'const'");
         }
         
         // Verifica que termine con punto y coma
         if (!decl.endsWith(";")) {
             return new ResultadoValidacion(false, 
-                "Declaración de constante debe terminar con punto y coma");
+                "Declaracion de constante debe terminar con punto y coma");
         }
         
         // Para arrays, validacion simplificada
@@ -178,7 +178,7 @@ public class ValidadorIdentificadores {
         // Verifica que contenga signo igual
         if (!decl.contains("=")) {
             return new ResultadoValidacion(false, 
-                "Declaración de constante debe contener '=' para asignar valor");
+                "Declaracion de constante debe contener '=' para asignar valor");
         }
         
         // Extrae partes
@@ -216,8 +216,8 @@ public class ValidadorIdentificadores {
     }
     
     /**
-     * Extrae el identificador de una declaración de variable
-     * @param declaracion Declaración de variable
+     * Extrae el identificador de una declaracion de variable
+     * @param declaracion Declaracion de variable
      * @return Nombre del identificador o null si no es valido
      */
     public static String extraerIdentificadorVariable(String declaracion) {
@@ -238,7 +238,7 @@ public class ValidadorIdentificadores {
     
     /**
      * Extrae el identificador de una declaracion de constante
-     * @param declaracion Declaración de constante
+     * @param declaracion Declaracion de constante
      * @return Nombre del identificador o null si no es valido
      */
     public static String extraerIdentificadorConstante(String declaracion) {
@@ -283,7 +283,7 @@ public class ValidadorIdentificadores {
         
         @Override
         public String toString() {
-            return String.format("ResultadoValidacion{válido=%s, mensaje='%s'}", 
+            return String.format("ResultadoValidacion{valido=%s, mensaje='%s'}", 
                                esValido, mensaje);
         }
     }

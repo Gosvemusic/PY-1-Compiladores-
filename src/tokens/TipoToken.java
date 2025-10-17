@@ -38,7 +38,7 @@ public enum TipoToken {
     FIN_ARCHIVO;
     
     /**
-     * Convierte el tipo de token a una representación legible
+     * Convierte el tipo de token a una representacion legible
      * @return Descripcion del tipo de token
      */
     @Override

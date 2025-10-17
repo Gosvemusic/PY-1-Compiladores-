@@ -159,7 +159,7 @@ public class Utilidades {
         for (int i = 0; i < linea.length(); i++) {
             char c = linea.charAt(i);
             
-            // Manejar comillas simples
+            // Maneja comillas simples
             if (c == '\'' && caracterAnterior != '\\') {
                 dentroDeComillas = !dentroDeComillas;
                 tokenActual.append(c);
@@ -251,7 +251,7 @@ public class Utilidades {
             return TipoToken.PALABRA_RESERVADA;
         }
         
-        // Verifica si es número
+        // Verifica si es numero
         if (PATRON_NUMERO_ENTERO.matcher(valor).matches() || 
             PATRON_NUMERO_REAL.matcher(valor).matches()) {
             return TipoToken.NUMERO;
@@ -484,7 +484,7 @@ public class Utilidades {
             return false;
         }
         
-        // Verificar parentesis balanceados
+        // Verifica parentesis balanceados
         int contadorParentesis = 0;
         for (char c : instruccion.toCharArray()) {
             if (c == '(') contadorParentesis++;
@@ -496,7 +496,7 @@ public class Utilidades {
     
     /**
      * Extrae el contenido entre parentesis de una instruccion Write/WriteLn
-     * @param instruccion Instrucción completa
+     * @param instruccion Instruccion completa
      * @return Contenido entre parentesis o null si no es valido
      */
     public static String extraerContenidoWrite(String instruccion) {

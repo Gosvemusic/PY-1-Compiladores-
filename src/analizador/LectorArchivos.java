@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Clase encargada de la lectura de archivos .pas
- * Mantiene el formato original incluyendo espacios y líneas en blanco
+ * Mantiene el formato original incluyendo espacios y lineas en blanco
  */
 public class LectorArchivos {
     

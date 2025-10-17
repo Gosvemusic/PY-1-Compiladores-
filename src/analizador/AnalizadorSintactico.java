@@ -7,10 +7,6 @@ import utils.Utilidades;
 import utils.ValidadorIdentificadores;
 import java.util.*;
 
-/**
- * Analizador sintactico para código PASCAL
- * Valida la estructura y sintaxis del programa
- */
 public class AnalizadorSintactico {
     
     private final ManejadorErrores manejadorErrores;
@@ -21,23 +17,16 @@ public class AnalizadorSintactico {
     private boolean varEncontrado = false;
     private boolean beginEncontrado = false;
     private boolean endEncontrado = false;
+    private boolean enSeccionVariables = false;
     
     public AnalizadorSintactico(ManejadorErrores manejadorErrores) {
         this.manejadorErrores = manejadorErrores;
     }
     
-    /**
-     * Realiza el analisis sintactico completo
-     * @param contenido Contenido del archivo
-     * @param tokens Lista de tokens del analisis lexico
-     */
     public void analizar(String contenido, List<Token> tokens) {
-        // Extraer nombre del archivo para validacion
         extraerNombreArchivo();
-        
         String[] lineas = contenido.split("\n");
         
-        // Analisis linea por linea
         for (int i = 0; i < lineas.length; i++) {
             int numeroLinea = i + 1;
             String linea = lineas[i].trim();
@@ -49,15 +38,10 @@ public class AnalizadorSintactico {
             analizarEstructura(linea, numeroLinea, i == 0, i == lineas.length - 1);
         }
         
-        // Validaciones finales de estructura
         validarEstructuraCompleta();
     }
     
-    /**
-     * Extrae el nombre del archivo desde el manejador de errores
-     */
     private void extraerNombreArchivo() {
-        // Extraer nombre base del archivo original
         String nombreCompleto = manejadorErrores.getNombreArchivoOriginal();
         if (nombreCompleto != null && nombreCompleto.endsWith(".pas")) {
             this.nombreArchivo = nombreCompleto.substring(0, nombreCompleto.length() - 4);
@@ -66,371 +50,269 @@ public class AnalizadorSintactico {
         }
     }
     
-    /**
-     * Verifica si una linea es un comentario
-     * @param linea Linea a verificar
-     * @return true si es comentario
-     */
     private boolean esComentario(String linea) {
-        return linea.startsWith("//") || 
-               (linea.startsWith("{") && linea.endsWith("}"));
+        return linea.startsWith("//") || (linea.startsWith("{") && linea.endsWith("}"));
     }
     
-    /**
-     * Analiza la estructura de una linea
-     * @param linea Linea a analizar
-     * @param numeroLinea Numero de linea
-     * @param esPrimeraLinea Si es la primera linea del archivo
-     * @param esUltimaLinea Si es la ultima linea del archivo
-     */
     private void analizarEstructura(String linea, int numeroLinea, boolean esPrimeraLinea, boolean esUltimaLinea) {
-        String lineaLimpia = eliminarComentarios(linea);
+        String lineaLimpia = linea.trim();
         
-        if (lineaLimpia.trim().isEmpty()) {
+        if (esPrimeraLinea && !lineaLimpia.toLowerCase().startsWith("program")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.PROGRAM_NO_ENCONTRADO,
+                "El archivo debe comenzar con 'program'");
+        }
+        
+        if (lineaLimpia.isEmpty() || esComentario(lineaLimpia)) {
             return;
         }
         
-        // Analisis segun palabra clave
-        if (lineaLimpia.toLowerCase().startsWith("program ")) {
-            analizarProgram(lineaLimpia, numeroLinea, esPrimeraLinea);
-        } else if (lineaLimpia.toLowerCase().startsWith("uses ")) {
+        if (numeroLinea == 2 && programEncontrado && !lineaLimpia.toLowerCase().startsWith("uses")) {
+            if (lineaLimpia.matches(".*[a-zA-Z]+.*,.*[a-zA-Z]+.*") || lineaLimpia.matches(".*[a-zA-Z]+.*")) {
+                manejadorErrores.agregarError(numeroLinea, CodigosError.USES_NO_ENCONTRADO,
+                    "Falta palabra reservada 'uses' antes de las unidades");
+            }
+        }
+        
+        if (lineaLimpia.toLowerCase().startsWith("program")) {
+            analizarProgram(lineaLimpia, numeroLinea);
+        } else if (lineaLimpia.toLowerCase().startsWith("uses")) {
             analizarUses(lineaLimpia, numeroLinea);
-        } else if (lineaLimpia.toLowerCase().startsWith("const ")) {
+        } else if (lineaLimpia.toLowerCase().startsWith("const")) {
             analizarConst(lineaLimpia, numeroLinea);
-        } else if (lineaLimpia.toLowerCase().startsWith("var ")) {
+        } else if (lineaLimpia.toLowerCase().startsWith("var")) {
             analizarVar(lineaLimpia, numeroLinea);
+            enSeccionVariables = true;
         } else if (lineaLimpia.toLowerCase().equals("begin")) {
             analizarBegin(lineaLimpia, numeroLinea);
+            enSeccionVariables = false;
+        } else if (lineaLimpia.toLowerCase().startsWith("begin")) {
+            analizarBeginConComentario(lineaLimpia, numeroLinea);
+            enSeccionVariables = false;
         } else if (lineaLimpia.toLowerCase().equals("end.")) {
             analizarEnd(lineaLimpia, numeroLinea, esUltimaLinea);
-        } else if (lineaLimpia.toLowerCase().startsWith("write(") || 
-                   lineaLimpia.toLowerCase().startsWith("writeln(")) {
+        } else if (lineaLimpia.toLowerCase().equals("end")) {
+            analizarEndSinPunto(lineaLimpia, numeroLinea, esUltimaLinea);
+        } else if (lineaLimpia.toLowerCase().startsWith("write")) {
             analizarWrite(lineaLimpia, numeroLinea);
+        } else {
+            if (lineaLimpia.contains("=") && !constEncontrado && usesEncontrado && !varEncontrado && !lineaLimpia.toLowerCase().contains("const")) {
+                manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_SIN_CONST,
+                    "Falta palabra reservada 'const' antes de la declaracion de constante");
+            }
+            
+            if (enSeccionVariables && lineaLimpia.matches(".*\\s*:\\s*(word|integer|byte|string|real|boolean).*")) {
+                validarDeclaracionVariableSinVar(lineaLimpia, numeroLinea);
+                validarPuntoComaVariable(lineaLimpia, numeroLinea);
+                validarIdentificadorVariableReservada(lineaLimpia, numeroLinea);
+            }
+            
+            if (varEncontrado && !beginEncontrado && lineaLimpia.matches(".*\\s*:\\s*(word|integer|byte|string|real|boolean).*") && !lineaLimpia.toLowerCase().startsWith("var")) {
+                validarPuntoComaVariable(lineaLimpia, numeroLinea);
+                validarIdentificadorVariableReservada(lineaLimpia, numeroLinea);
+            }
         }
     }
     
-    /**
-     * Analiza la declaracion program
-     * @param linea Linea con program
-     * @param numeroLinea Numero de linea
-     * @param esPrimeraLinea Si es la primera linea
-     */
-    private void analizarProgram(String linea, int numeroLinea, boolean esPrimeraLinea) {
-        if (!esPrimeraLinea) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.PROGRAM_NO_ENCONTRADO,
-                "Program debe ser la primera declaracion del archivo");
-            return;
-        }
-        
+    private void analizarProgram(String linea, int numeroLinea) {
         if (programEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.PROGRAM_NO_ENCONTRADO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.PROGRAM_NO_ENCONTRADO,
                 "Program ya fue declarado anteriormente");
             return;
         }
         
-        // Validar formato: program identificador;
-        String[] partes = linea.split("\\s+");
-        if (partes.length < 2) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.ESTRUCTURA_INCORRECTA,
-                "Program debe tener un identificador");
-            return;
-        }
-        
-        String identificadorConPuntoComa = partes[1];
-        if (!identificadorConPuntoComa.endsWith(";")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.ESTRUCTURA_INCORRECTA,
+        if (!linea.endsWith(";")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.ESTRUCTURA_INCORRECTA,
                 "Program debe terminar con punto y coma");
-            return;
         }
         
-        String identificador = identificadorConPuntoComa.substring(0, identificadorConPuntoComa.length() - 1);
-        
-        // Verifica que el identificador coincida con el nombre del archivo
-        if (!identificador.equalsIgnoreCase(nombreArchivo)) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.PROGRAM_NOMBRE_INCORRECTO,
-                "El nombre del programa '" + identificador + "' no coincide con el archivo '" + nombreArchivo + "'");
+        String[] partes = linea.split("\\s+");
+        if (partes.length > 1) {
+            String identificador = partes[1].replace(";", "");
+            if (!identificador.isEmpty() && !identificador.equalsIgnoreCase(nombreArchivo)) {
+                manejadorErrores.agregarError(numeroLinea, CodigosError.PROGRAM_NOMBRE_INCORRECTO,
+                    "El nombre del programa '" + identificador + "' no coincide con el archivo '" + nombreArchivo + "'");
+            }
         }
         
         programEncontrado = true;
     }
     
-    /**
-     * Analiza la declaracion uses
-     * @param linea Linea con uses
-     * @param numeroLinea Numero de linea
-     */
     private void analizarUses(String linea, int numeroLinea) {
         if (!programEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.USES_NO_ENCONTRADO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.USES_NO_ENCONTRADO,
                 "Uses debe venir despues de program");
             return;
         }
         
         if (usesEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.USES_NO_ENCONTRADO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.USES_NO_ENCONTRADO,
                 "Uses ya fue declarado anteriormente");
             return;
         }
         
         if (!linea.endsWith(";")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.ESTRUCTURA_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.ESTRUCTURA_INCORRECTA,
                 "Uses debe terminar con punto y coma");
         }
         
         usesEncontrado = true;
     }
     
-    /**
-     * Analiza declaraciones de constantes
-     * @param linea Linea con const
-     * @param numeroLinea Numero de linea
-     */
     private void analizarConst(String linea, int numeroLinea) {
         if (!usesEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_UBICACION_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_UBICACION_INCORRECTA,
                 "Const debe venir despues de uses");
             return;
         }
         
         if (varEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_UBICACION_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_UBICACION_INCORRECTA,
                 "Const debe venir antes de var");
             return;
         }
         
         if (beginEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_UBICACION_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_UBICACION_INCORRECTA,
                 "Const no puede venir despues de begin");
             return;
         }
         
-        // Valida formato de constante
         validarFormatoConstante(linea, numeroLinea);
         constEncontrado = true;
     }
     
-    /**
-     * Valida el formato de una declaración de constante
-     * @param linea Línea con const
-     * @param numeroLinea Numero de linea
-     */
     private void validarFormatoConstante(String linea, int numeroLinea) {
-        // Para arrays especiales, solo valida estructura basica
-        if (linea.contains("array")) {
-            if (!linea.endsWith(";")) {
-                manejadorErrores.agregarError(numeroLinea,
-                    CodigosError.CONSTANTE_SIN_PUNTO_COMA,
-                    "Declaracion de constante debe terminar con punto y coma");
-            }
+        if (linea.trim().equalsIgnoreCase("const")) {
             return;
         }
         
-        // Formato normal: const identificador = valor;
-        String[] partes = linea.split("=");
-        if (partes.length != 2) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_FORMATO_INCORRECTO,
-                "Constante debe tener formato: const identificador = valor;");
+        if (!linea.contains("=")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_FORMATO_INCORRECTO,
+                "Declaracion de constante debe tener formato: nombre = valor;");
             return;
         }
         
-        String parteIzq = partes[0].trim();
-        String parteDer = partes[1].trim();
-        
-        // Validar parte izquierda: const identificador
-        String[] partesIzq = parteIzq.split("\\s+");
-        if (partesIzq.length != 2 || !partesIzq[0].equalsIgnoreCase("const")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_FORMATO_INCORRECTO,
-                "Formato incorrecto en declaración de constante");
-            return;
-        }
-        
-        String identificador = partesIzq[1];
-        validarIdentificadorConstante(identificador, numeroLinea);
-        
-        // Validar parte derecha: valor;
-        if (!parteDer.endsWith(";")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_SIN_PUNTO_COMA,
-                "Declaración de constante debe terminar con punto y coma");
+        if (!linea.endsWith(";")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.CONSTANTE_SIN_PUNTO_COMA,
+                "Declaracion de constante debe terminar con punto y coma");
         }
     }
     
-    /**
-     * Valida un identificador de constante
-     * @param identificador Identificador a validar
-     * @param numeroLinea Numero de linea
-     */
-    private void validarIdentificadorConstante(String identificador, int numeroLinea) {
-        if (identificador.isEmpty()) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.CONSTANTE_FORMATO_INCORRECTO,
-                "Constante debe tener un identificador");
-            return;
-        }
-        
-        if (Character.isDigit(identificador.charAt(0))) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.IDENTIFICADOR_NUMERO_INICIAL,
-                "Identificador de constante no puede comenzar con numero: " + identificador);
-        }
-        
-        if (PalabrasReservadas.esPalabraReservada(identificador)) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.IDENTIFICADOR_PALABRA_RESERVADA,
-                "No se puede usar palabra reservada como identificador de constante: " + identificador);
-        }
-    }
-    
-    /**
-     * Analiza declaraciones de variables
-     * @param linea Linea con var
-     * @param numeroLinea Número de linea
-     */
     private void analizarVar(String linea, int numeroLinea) {
-        if (!usesEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_UBICACION_INCORRECTA,
-                "Var debe venir después de uses");
+        if (!usesEncontrado && !constEncontrado) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_UBICACION_INCORRECTA,
+                "Var debe venir despues de uses o const");
             return;
         }
         
         if (beginEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_UBICACION_INCORRECTA,
-                "Var no puede venir después de begin");
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_UBICACION_INCORRECTA,
+                "Var debe venir antes de begin");
             return;
         }
         
-        // Valida formato de variable
-        validarFormatoVariable(linea, numeroLinea);
+        if (linea.trim().equalsIgnoreCase("var")) {
+            varEncontrado = true;
+            return;
+        }
+        
+        if (linea.contains(":") && !linea.trim().equalsIgnoreCase("var")) {
+            validarDeclaracionVariable(linea, numeroLinea);
+        }
+        
         varEncontrado = true;
     }
     
-    /**
-     * Valida el formato de una declaracion de variable
-     * @param linea Linea con var
-     * @param numeroLinea Numero de linea
-     */
-    private void validarFormatoVariable(String linea, int numeroLinea) {
-        // Para arrays, solo valida estructura basica
-        if (linea.contains("array")) {
-            if (!linea.endsWith(";")) {
-                manejadorErrores.agregarError(numeroLinea,
-                    CodigosError.VARIABLE_SIN_PUNTO_COMA,
-                    "Declaracion de variable debe terminar con punto y coma");
+    private void validarDeclaracionVariable(String linea, int numeroLinea) {
+        String patron = "\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*(word|integer|byte|string|real|boolean)\\s*;?";
+        if (linea.matches(patron)) {
+            String[] partes = linea.split(":");
+            if (partes.length > 0) {
+                String identificador = partes[0].trim();
+                validarIdentificadorVariable(identificador, numeroLinea);
+                validarTipoVariable(partes.length > 1 ? partes[1].trim() : "", numeroLinea);
             }
-            return;
+        } else {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_FORMATO_INCORRECTO,
+                "Formato de declaracion de variable incorrecto. Formato esperado: nombre : tipo;");
+        }
+    }
+    
+    private void validarTipoVariable(String tipo, int numeroLinea) {
+        tipo = tipo.replace(";", "").trim();
+        String[] tiposValidos = {"word", "integer", "byte", "string", "real", "boolean"};
+        boolean tipoValido = false;
+        
+        for (String tipoVal : tiposValidos) {
+            if (tipo.equalsIgnoreCase(tipoVal)) {
+                tipoValido = true;
+                break;
+            }
         }
         
-        // Formato normal: var identificador : tipo;
-        if (!linea.contains(":")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_FORMATO_INCORRECTO,
-                "Variable debe tener formato: var identificador : tipo;");
-            return;
-        }
-        
-        String[] partes = linea.split(":");
-        if (partes.length != 2) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_FORMATO_INCORRECTO,
-                "Variable debe tener formato: var identificador : tipo;");
-            return;
-        }
-        
-        String parteIzq = partes[0].trim();
-        String parteDer = partes[1].trim();
-        
-        // Valida parte izquierda: var identificador
-        String[] partesIzq = parteIzq.split("\\s+");
-        if (partesIzq.length != 2 || !partesIzq[0].equalsIgnoreCase("var")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_SIN_VAR,
-                "Declaración debe comenzar con 'var'");
-            return;
-        }
-        
-        String identificador = partesIzq[1];
-        validarIdentificadorVariable(identificador, numeroLinea);
-        
-        // Validar parte derecha: tipo;
-        if (!parteDer.endsWith(";")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_SIN_PUNTO_COMA,
-                "Declaración de variable debe terminar con punto y coma");
-            return;
-        }
-        
-        // Verificar espacio después de ':'
-        if (!partes[1].startsWith(" ")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_FORMATO_INCORRECTO,
-                "Debe haber un espacio despues de ':' en declaracion de variable");
-        }
-        
-        String tipo = parteDer.substring(0, parteDer.length() - 1).trim();
-        if (!PalabrasReservadas.esTipoValido(tipo)) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_TIPO_INVALIDO,
+        if (!tipoValido && !tipo.isEmpty()) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_TIPO_INVALIDO,
                 "Tipo de variable invalido: " + tipo + ". Tipos validos: integer, string, Word");
         }
     }
     
-    /**
-     * Valida un identificador de variable
-     * @param identificador Identificador a validar
-     * @param numeroLinea Numero de linea
-     */
     private void validarIdentificadorVariable(String identificador, int numeroLinea) {
         if (identificador.isEmpty()) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.VARIABLE_FORMATO_INCORRECTO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_FORMATO_INCORRECTO,
                 "Variable debe tener un identificador");
             return;
         }
         
         if (Character.isDigit(identificador.charAt(0))) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.IDENTIFICADOR_NUMERO_INICIAL,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.IDENTIFICADOR_NUMERO_INICIAL,
                 "Identificador de variable no puede comenzar con numero: " + identificador);
         }
         
         if (PalabrasReservadas.esPalabraReservada(identificador)) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.IDENTIFICADOR_PALABRA_RESERVADA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.IDENTIFICADOR_PALABRA_RESERVADA,
                 "No se puede usar palabra reservada como identificador de variable: " + identificador);
         }
     }
     
-    /**
-     * Analiza la declaracion begin
-     * @param linea Linea con begin
-     * @param numeroLinea Numero de linea
-     */
+    private void validarDeclaracionVariableSinVar(String linea, int numeroLinea) {
+        if (!linea.toLowerCase().startsWith("var") && varEncontrado) {
+            String patron = "\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*(word|integer|byte|string|real|boolean)\\s*;?";
+            if (linea.matches(patron)) {
+                return;
+            }
+        }
+    }
+    
+    private void validarPuntoComaVariable(String linea, int numeroLinea) {
+        if (linea.contains(":") && !linea.trim().endsWith(";") && linea.matches(".*\\s*:\\s*(word|integer|byte|string|real|boolean)\\s*$")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.VARIABLE_SIN_PUNTO_COMA,
+                "La declaracion de variable debe terminar con punto y coma");
+        }
+    }
+    
+    private void validarIdentificadorVariableReservada(String linea, int numeroLinea) {
+        String patron = "\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*(word|integer|byte|string|real|boolean)";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(patron, java.util.regex.Pattern.CASE_INSENSITIVE);
+        java.util.regex.Matcher m = p.matcher(linea);
+        
+        if (m.find()) {
+            String identificador = m.group(1);
+            if (PalabrasReservadas.esPalabraReservada(identificador)) {
+                manejadorErrores.agregarError(numeroLinea, CodigosError.IDENTIFICADOR_PALABRA_RESERVADA,
+                    "No se puede usar la palabra reservada '" + identificador + "' como identificador de variable");
+            }
+        }
+    }
+    
     private void analizarBegin(String linea, int numeroLinea) {
         if (!linea.trim().equalsIgnoreCase("begin")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.BEGIN_NO_SOLO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.BEGIN_NO_SOLO,
                 "Begin debe estar solo en su linea sin otros elementos");
             return;
         }
         
         if (beginEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.BEGIN_UBICACION_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.BEGIN_UBICACION_INCORRECTA,
                 "Begin ya fue declarado anteriormente");
             return;
         }
@@ -438,188 +320,103 @@ public class AnalizadorSintactico {
         beginEncontrado = true;
     }
     
-    /**
-     * Analiza la declaración end
-     * @param linea Linea con end
-     * @param numeroLinea Numero de linea
-     * @param esUltimaLinea Si es la ultima linea
-     */
+    private void analizarBeginConComentario(String linea, int numeroLinea) {
+        String lineaLimpia = linea.trim();
+        String despuesDeBegin = lineaLimpia.replaceFirst("(?i)begin", "").trim();
+        
+        if (!despuesDeBegin.isEmpty()) {
+            if (despuesDeBegin.startsWith("//") || despuesDeBegin.startsWith("{")) {
+                manejadorErrores.agregarError(numeroLinea, CodigosError.BEGIN_NO_SOLO,
+                    "Begin debe estar solo en su linea, sin comentarios");
+            }
+        }
+        
+        if (!beginEncontrado) {
+            beginEncontrado = true;
+        }
+    }
+    
     private void analizarEnd(String linea, int numeroLinea, boolean esUltimaLinea) {
         if (!linea.trim().equals("end.")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.END_SIN_PUNTO,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.END_SIN_PUNTO,
                 "End debe terminar con punto: 'end.'");
             return;
         }
         
         if (!beginEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.END_UBICACION_INCORRECTA,
+            manejadorErrores.agregarError(numeroLinea, CodigosError.END_UBICACION_INCORRECTA,
                 "End. no puede aparecer antes de begin");
             return;
         }
         
         if (!esUltimaLinea) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.END_UBICACION_INCORRECTA,
-                "End. debe ser la última línea del archivo");
+            manejadorErrores.agregarError(numeroLinea, CodigosError.END_UBICACION_INCORRECTA,
+                "End. debe ser la ultima linea del archivo");
+            return;
         }
         
         endEncontrado = true;
     }
     
-    /**
-     * Analiza instrucciones write/writeln
-     * @param linea Linea con write
-     * @param numeroLinea Numero de linea
-     */
+    private void analizarEndSinPunto(String linea, int numeroLinea, boolean esUltimaLinea) {
+        if (esUltimaLinea && linea.trim().equalsIgnoreCase("end")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.END_SIN_PUNTO,
+                "El programa debe terminar con 'end.' (end seguido de punto)");
+        }
+    }
+    
     private void analizarWrite(String linea, int numeroLinea) {
         if (!beginEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_SIN_PARENTESIS,
-                "Write/WriteLn debe estar después de begin");
+            manejadorErrores.agregarError(numeroLinea, CodigosError.WRITE_SIN_BEGIN,
+                "La instruccion write/writeln debe estar despues de 'begin'");
             return;
         }
         
-        if (endEncontrado) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_SIN_PARENTESIS,
-                "Write/WriteLn debe estar antes de end");
+        if (!linea.contains("(") || !linea.contains(")")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.WRITE_SIN_PARENTESIS,
+                "Write/Writeln debe tener parentesis: write(...)");
             return;
         }
         
-        // Validar formato de write
-        validarFormatoWrite(linea, numeroLinea);
-    }
-    
-    /**
-     * Valida el formato de una instrucción write/writeln
-     * @param linea Línea con write
-     * @param numeroLinea Número de linea
-     */
-    private void validarFormatoWrite(String linea, int numeroLinea) {
-        String lineaLimpia = linea.trim();
+        int inicio = linea.indexOf("(");
+        int fin = linea.lastIndexOf(")");
         
-        // Verifica que termine con punto y coma
-        if (!lineaLimpia.endsWith(";")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_SIN_PUNTO_COMA,
-                "Write/WriteLn debe terminar con punto y coma");
-        }
-        
-        // Remueve punto y coma para analisis
-        if (lineaLimpia.endsWith(";")) {
-            lineaLimpia = lineaLimpia.substring(0, lineaLimpia.length() - 1);
-        }
-        
-        // Verifica parentesis
-        if (!lineaLimpia.contains("(") || !lineaLimpia.contains(")")) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_SIN_PARENTESIS,
-                "Write/WriteLn debe tener paréntesis de apertura y cierre");
+        if (inicio >= fin) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.WRITE_SIN_PARENTESIS,
+                "Parentesis mal formados en write/writeln");
             return;
         }
         
-        // Extrae contenido entre parentesis
-        int inicioParentesis = lineaLimpia.indexOf("(");
-        int finParentesis = lineaLimpia.lastIndexOf(")");
-        
-        if (inicioParentesis >= finParentesis) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_SIN_PARENTESIS,
-                "Paréntesis mal formados en Write/WriteLn");
-            return;
-        }
-        
-        String contenido = lineaLimpia.substring(inicioParentesis + 1, finParentesis).trim();
-        
-        // Verifica que no este vacío
+        String contenido = linea.substring(inicio + 1, fin).trim();
         if (contenido.isEmpty()) {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_VACIO,
-                "Write/WriteLn no puede estar vacio");
+            manejadorErrores.agregarError(numeroLinea, CodigosError.WRITE_VACIO,
+                "Write/Writeln no puede estar vacio");
             return;
         }
         
-        // Valida contenido (cadena o variable)
-        validarContenidoWrite(contenido, numeroLinea);
-    }
-    
-    /**
-     * Valida el contenido de write/writeln
-     * @param contenido Contenido entre parentesis
-     * @param numeroLinea Número de linea
-     */
-    private void validarContenidoWrite(String contenido, int numeroLinea) {
-        contenido = contenido.trim();
-        
-        // Si es una cadena
-        if (contenido.startsWith("'")) {
-            if (!contenido.endsWith("'")) {
-                manejadorErrores.agregarError(numeroLinea,
-                    CodigosError.WRITE_COMILLAS_MAL_CERRADAS,
-                    "Cadena en Write/WriteLn mal cerrada: falta comilla final");
-            }
-        } else if (!contenido.startsWith("'") && !contenido.endsWith("'")) {
-            // Es una variable o expresión - aqui se podria validar si existe
-            // Por simplicidad, se asume que las variables basicas existen
-            if (!esVariableValida(contenido)) {
-                manejadorErrores.agregarError(numeroLinea,
-                    CodigosError.WRITE_VARIABLE_NO_DECLARADA,
-                    "Variable no declarada en Write/WriteLn: " + contenido);
-            }
-        } else {
-            manejadorErrores.agregarError(numeroLinea,
-                CodigosError.WRITE_COMILLAS_MAL_CERRADAS,
-                "Formato incorrecto en Write/WriteLn: " + contenido);
+        if (!linea.endsWith(";")) {
+            manejadorErrores.agregarError(numeroLinea, CodigosError.WRITE_SIN_PUNTO_COMA,
+                "Write/Writeln debe terminar con punto y coma");
         }
     }
     
-    /**
-     * Verifica si una variable es valida (simplificado)
-     * @param variable Variable a verificar
-     * @return true si es valida
-     */
-    private boolean esVariableValida(String variable) {
-        // Verifica que sea un identificador valido
-        if (variable.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            // Variables comunes del ejemplo
-            Set<String> variablesComunes = Set.of(
-                "meses", "tecla", "i", "dia", "modulo", "day", "year", "mes", "dayofweek"
-            );
-            return variablesComunes.contains(variable.toLowerCase());
-        }
-        return false;
-    }
-    
-    /**
-     * Elimina comentarios de una linea
-     * @param linea Linea original
-     * @return Linea sin comentarios
-     */
     private String eliminarComentarios(String linea) {
         String resultado = linea;
         
-        // Elimina comentarios //
         int posSlash = resultado.indexOf("//");
         if (posSlash != -1) {
             resultado = resultado.substring(0, posSlash);
         }
         
-        // Elimina comentarios {}
         int posInicioLlave = resultado.indexOf("{");
         int posFinLlave = resultado.indexOf("}");
         if (posInicioLlave != -1 && posFinLlave != -1 && posFinLlave > posInicioLlave) {
-            resultado = resultado.substring(0, posInicioLlave) + 
-                       resultado.substring(posFinLlave + 1);
+            resultado = resultado.substring(0, posInicioLlave) + resultado.substring(posFinLlave + 1);
         }
         
         return resultado;
     }
     
-    /**
-     * Validaciones finales de estructura completa
-     */
     private void validarEstructuraCompleta() {
         if (!programEncontrado) {
             manejadorErrores.agregarError(CodigosError.PROGRAM_NO_ENCONTRADO,

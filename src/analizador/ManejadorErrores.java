@@ -42,7 +42,7 @@ public class ManejadorErrores {
     
     /**
      * Agrega un error a la lista
-     * @param numeroLinea Número de línea donde ocurre el error (1-based)
+     * @param numeroLinea Numero de linea donde ocurre el error (1-based)
      * @param numeroError Codigo del error
      * @param descripcion Descripcion del error
      */
